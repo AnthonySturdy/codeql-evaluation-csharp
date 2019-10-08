@@ -53,7 +53,8 @@ namespace SimpleClient {
         }
 
         void ProcessServerResponse() {
-            //GOT TO HERE ON THE TUTORIAL
+            Console.WriteLine("Server says: " + reader.ReadLine());
+            Console.WriteLine();
         }
     }
 }

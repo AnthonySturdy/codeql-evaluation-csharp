@@ -37,7 +37,10 @@ namespace SimpleServer {
             StreamReader reader = new StreamReader(stream);
             StreamWriter writer = new StreamWriter(stream);
 
-            while((receivedMessage = reader.ReadLine()) != null) {
+            writer.WriteLine("Welcome!");
+            writer.Flush();
+
+            while ((receivedMessage = reader.ReadLine()) != null) {
                 string returnMsg = GetReturnMessage(receivedMessage);
 
                 writer.WriteLine(returnMsg);
@@ -48,9 +51,11 @@ namespace SimpleServer {
         }
 
         string GetReturnMessage(string code) {
-            if(code == "Hi") {
+            string capMsg = code.ToUpper();
+
+            if (capMsg == "HI" || capMsg == "HELLO" || capMsg == "HEY") {
                 return "Hello";
-            } else if (code == "Joke") {
+            } else if (capMsg == "JOKE" || capMsg == "TELL ME A JOKE") {
                 return "What do you call a zoo with only one dog? A shih-tzu.";
             } else {
                 return "I don't know what to say to that.";
