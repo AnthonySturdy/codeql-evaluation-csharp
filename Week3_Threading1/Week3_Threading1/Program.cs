@@ -3,22 +3,19 @@ using System.Threading;
 
 namespace Week3_Threading1 {
     public class ThreadWork {
-        public static void DoWork() {
-            for(int i = 100; i > 0; i--) {
-                Console.WriteLine(i + "*");
-            }
+        public static void DoWork(object curThread) {
+            Console.WriteLine(curThread);
+            Thread.Sleep(Convert.ToInt32(curThread) * 500);
+            DoWork(curThread);
         }
     }
 
     class Program {
         static void Main(string[] args) {
-            Thread thread1 = new Thread(ThreadWork.DoWork); // NEED TO DO EXCERSIZE 1.2
-            thread1.Start();
-
-            for(int i = 0; i < 100; i++) {
-                Console.WriteLine(i);
+            for(int i = 1; i < 6; i++) {
+                Thread thread = new Thread(ThreadWork.DoWork);
+                thread.Start(i);
             }
-
         }
     }
 }
