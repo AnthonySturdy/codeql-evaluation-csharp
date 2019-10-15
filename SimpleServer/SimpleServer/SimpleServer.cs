@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 using System.IO;
 using System.Net;
@@ -12,8 +12,12 @@ namespace SimpleServer {
     class SimpleServer {
         TcpListener listener;
 
+        List<Client> clients;
+
         public SimpleServer(string ipAddress, int port) {
             listener = new TcpListener(IPAddress.Parse(ipAddress), port);
+
+            clients = new List<Client>();
         }
 
         public void Start() {
@@ -23,14 +27,19 @@ namespace SimpleServer {
 
             Console.WriteLine("Socket accepted");
 
-            SocketMethod(socket);
+            Client c = new Client(socket);
+            clients.Add(c);
+            Thread t = new Thread(new ParameterizedThreadStart(ClientMethod));
+            t.Start(c);
+
+            //SocketMethod(socket);
         }
 
         public void Stop() {
             listener.Stop();
         }
 
-        void SocketMethod(Socket socket) {
+        /*void SocketMethod(Socket socket) {
             string receivedMessage;
 
             NetworkStream stream = new NetworkStream(socket);
@@ -48,6 +57,25 @@ namespace SimpleServer {
             }
 
             socket.Close();
+        }*/
+
+        void ClientMethod(object clientObj) {
+            Client client = (Client)clientObj;
+
+            string receivedMessage;
+
+            client.writer.WriteLine("Welcome!");
+            client.writer.Flush();
+
+            while ((receivedMessage = client.reader.ReadLine()) != null) {
+                string returnMsg = GetReturnMessage(receivedMessage);
+
+                client.writer.WriteLine(returnMsg);
+                client.writer.Flush();
+            }
+
+            client.Close();
+            clients.Remove(client);
         }
 
         string GetReturnMessage(string code) {
