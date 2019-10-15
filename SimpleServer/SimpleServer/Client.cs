@@ -21,8 +21,6 @@ namespace SimpleServer {
             stream = new NetworkStream(socket);
             reader = new StreamReader(stream);
             writer = new StreamWriter(stream);
-
-
         }
 
         public void Close() {

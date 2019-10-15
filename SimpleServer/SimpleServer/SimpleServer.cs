@@ -31,33 +31,11 @@ namespace SimpleServer {
             clients.Add(c);
             Thread t = new Thread(new ParameterizedThreadStart(ClientMethod));
             t.Start(c);
-
-            //SocketMethod(socket);
         }
 
         public void Stop() {
             listener.Stop();
         }
-
-        /*void SocketMethod(Socket socket) {
-            string receivedMessage;
-
-            NetworkStream stream = new NetworkStream(socket);
-            StreamReader reader = new StreamReader(stream);
-            StreamWriter writer = new StreamWriter(stream);
-
-            writer.WriteLine("Welcome!");
-            writer.Flush();
-
-            while ((receivedMessage = reader.ReadLine()) != null) {
-                string returnMsg = GetReturnMessage(receivedMessage);
-
-                writer.WriteLine(returnMsg);
-                writer.Flush();
-            }
-
-            socket.Close();
-        }*/
 
         void ClientMethod(object clientObj) {
             Client client = (Client)clientObj;
