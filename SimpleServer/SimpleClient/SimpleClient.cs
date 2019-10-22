@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Threading;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -24,7 +25,7 @@ namespace SimpleClient {
                 client.Connect(IPAddress.Parse(ipAddress), port);
                 stream = client.GetStream();
                 writer = new StreamWriter(stream);
-                reader = new StreamReader(stream); 
+                reader = new StreamReader(stream);
             } catch (Exception e) {
                 Console.WriteLine("Exception: " + e.Message);
                 return false;
@@ -34,27 +35,37 @@ namespace SimpleClient {
         }
 
         public void Run() {
-            string userInput;
+            Thread t = new Thread(ClientWrite);
+            t.Start();
 
-            ProcessServerResponse();
+            Thread t1 = new Thread(ProcessServerResponse);
+            t1.Start();
+        }
+
+        void ClientWrite() {
+            string userInput;
 
             while ((userInput = Console.ReadLine()) != null) {
                 writer.WriteLine(userInput);
                 writer.Flush();
 
-                ProcessServerResponse();
-
                 if (userInput == "Exit") {
                     break;
                 }
             }
-
-            client.Close();
         }
 
         void ProcessServerResponse() {
-            Console.WriteLine("Server says: " + reader.ReadLine());
-            Console.WriteLine();
+            string serverMessage;
+
+            while((serverMessage = reader.ReadLine()) != null) {
+                Console.WriteLine(serverMessage);
+
+                if (serverMessage == "Bye") {
+                    client.Close();
+                    break;
+                }
+            }
         }
     }
 }

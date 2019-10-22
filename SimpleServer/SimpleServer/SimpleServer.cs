@@ -25,7 +25,9 @@ namespace SimpleServer {
 
             listener.Start();
 
-            CreateClient();
+            do {
+                CreateClient();
+            } while (clients.Count > 0);
         }
 
         public void Stop() {
@@ -62,14 +64,14 @@ namespace SimpleServer {
             while ((receivedMessage = client.reader.ReadLine()) != null) {
                 if (receivedMessage == "Exit") {
                     Console.WriteLine("Client " + client.clientNumber + " exited.");
+                    MessageAllClients("Client " + client.clientNumber + " exited.");
                     break;
                 }
 
                 Console.WriteLine("Client " + client.clientNumber + ": " + receivedMessage);    //Write incoming messages to server window
-                
-                string returnMsg = GetReturnMessage(receivedMessage);   //Process message and get response
-                client.writer.WriteLine(returnMsg);
-                client.writer.Flush();
+                MessageAllClients("Client " + client.clientNumber + ": " + receivedMessage);
+
+                //string returnMsg = GetReturnMessage(receivedMessage);   //Process message and get response
             }
 
             client.Close();
@@ -83,8 +85,17 @@ namespace SimpleServer {
                 return "Hello";
             } else if (capMsg == "JOKE" || capMsg == "TELL ME A JOKE") {
                 return "What do you call a zoo with only one dog? A shih-tzu.";
+            } else if (capMsg == "BYE") {
+                return "Bye";
             } else {
                 return "I don't know what to say to that.";
+            }
+        }
+
+        void MessageAllClients(string message) {
+            for (int i = 0; i < clients.Count; i++) {
+                clients[i].writer.WriteLine(message);
+                clients[i].writer.Flush();
             }
         }
 
