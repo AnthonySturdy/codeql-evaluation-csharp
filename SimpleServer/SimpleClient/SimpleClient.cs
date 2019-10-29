@@ -20,17 +20,18 @@ namespace SimpleClient {
         Thread readerThread;
 
         public SimpleClient() {
-            client = new TcpClient();
             messageForm = new ClientForm(this);
+            Application.Run(messageForm);
         }
 
         public bool Connect(string ipAddress, int port) {
             try {
+                client = new TcpClient();
                 client.Connect(IPAddress.Parse(ipAddress), port);
                 stream = client.GetStream();
                 writer = new StreamWriter(stream);
                 reader = new StreamReader(stream);
-                Application.Run(messageForm);
+                Run();
             } catch (Exception e) {
                 Console.WriteLine("Exception: " + e.Message);
                 return false;
@@ -45,13 +46,18 @@ namespace SimpleClient {
         }
 
         public void Stop() {
-            readerThread.Abort();
-            client.Close();
+            if(readerThread != null)
+                readerThread.Abort();
+
+            if(client != null)
+                client.Close();
         }
 
         public void SendMessage(string message) {
-            writer.WriteLine(message);
-            writer.Flush();
+            if (!string.IsNullOrWhiteSpace(message)) {
+                writer.WriteLine(message);
+                writer.Flush();
+            }
         }
 
         void ProcessServerResponse() {

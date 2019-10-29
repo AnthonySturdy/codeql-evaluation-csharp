@@ -28,7 +28,7 @@ namespace SimpleClient {
                 if (OutputBox.InvokeRequired) {
                     Invoke(_updateChatWindowDelegate, message);
                 } else {
-                    OutputBox.Text += message;
+                    OutputBox.Text += (message + "\r\n");
                     OutputBox.SelectionStart = OutputBox.Text.Length;
                     OutputBox.ScrollToCaret();
                 }
@@ -43,12 +43,44 @@ namespace SimpleClient {
             InputBox.Select();
         }
 
+        private void ClientForm_Load(object sender, EventArgs e) {
+        }
+
         private void ClientForm_FormClosed(object sender, FormClosedEventArgs e) {
             client.Stop();
         }
 
-        private void ClientForm_Load(object sender, EventArgs e) {
-            client.Run();
+        private void InputBox_KeyDown(object sender, KeyEventArgs e) {
+            if(e.KeyCode == Keys.Enter) {
+                SendButton.PerformClick();  //Send message
+                e.SuppressKeyPress = true;  //Stop annoying sound
+            }
+        }
+
+        private void ConnectButton_Click(object sender, EventArgs e) {
+            if(client.Connect(IPTextBox.Text, (int)PortNumberBox.Value)) {
+                InputBox.Enabled = true;
+                SendButton.Enabled = true;
+                DisconnectButton.Enabled = true;
+                ConnectButton.Enabled = false;
+                UsernameTextBox.Enabled = false;
+                IPTextBox.Enabled = false;
+                PortNumberBox.Enabled = false;
+            } else {
+                UpdateChatWindow("Failed to connect to " + IPTextBox.Text + ":" + PortNumberBox.Value);
+            }
+
+        }
+
+        private void DisconnectButton_Click(object sender, EventArgs e) {
+            client.Stop();
+            InputBox.Enabled = false;
+            SendButton.Enabled = false;
+            DisconnectButton.Enabled = false;
+            ConnectButton.Enabled = true;
+            UsernameTextBox.Enabled = true;
+            IPTextBox.Enabled = true;
+            PortNumberBox.Enabled = true;
         }
     }
 }

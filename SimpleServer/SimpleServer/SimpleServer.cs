@@ -62,20 +62,17 @@ namespace SimpleServer {
             client.writer.Flush();
 
             while ((receivedMessage = client.reader.ReadLine()) != null) {
-                if (receivedMessage == "Exit") {
-                    Console.WriteLine("Client " + client.clientNumber + " exited.");
-                    MessageAllClients("Client " + client.clientNumber + " exited.");
-                    break;
-                }
-
                 Console.WriteLine("Client " + client.clientNumber + ": " + receivedMessage);    //Write incoming messages to server window
                 MessageAllClients("Client " + client.clientNumber + ": " + receivedMessage);
-
-                //string returnMsg = GetReturnMessage(receivedMessage);   //Process message and get response
             }
+
+            int clientExitNum = client.clientNumber;
 
             client.Close();
             clients.Remove(client);
+
+            Console.WriteLine("Client " + client.clientNumber + " exited.");
+            MessageAllClients("Client " + client.clientNumber + " exited.");
         }
 
         string GetReturnMessage(string code) {
