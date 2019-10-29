@@ -8,16 +8,20 @@ using System.Threading;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows.Forms;
 
 namespace SimpleClient {
-    class SimpleClient {
+    public class SimpleClient {
         TcpClient client;
+        ClientForm messageForm;
         NetworkStream stream;
         StreamWriter writer;
         StreamReader reader;
+        Thread readerThread;
 
         public SimpleClient() {
             client = new TcpClient();
+            messageForm = new ClientForm(this);
         }
 
         public bool Connect(string ipAddress, int port) {
@@ -26,6 +30,7 @@ namespace SimpleClient {
                 stream = client.GetStream();
                 writer = new StreamWriter(stream);
                 reader = new StreamReader(stream);
+                Application.Run(messageForm);
             } catch (Exception e) {
                 Console.WriteLine("Exception: " + e.Message);
                 return false;
@@ -35,36 +40,25 @@ namespace SimpleClient {
         }
 
         public void Run() {
-            Thread t = new Thread(ClientWrite);
-            t.Start();
-
-            Thread t1 = new Thread(ProcessServerResponse);
-            t1.Start();
+            readerThread = new Thread(ProcessServerResponse);
+            readerThread.Start();
         }
 
-        void ClientWrite() {
-            string userInput;
+        public void Stop() {
+            readerThread.Abort();
+            client.Close();
+        }
 
-            while ((userInput = Console.ReadLine()) != null) {
-                writer.WriteLine(userInput);
-                writer.Flush();
-
-                if (userInput == "Exit") {
-                    break;
-                }
-            }
+        public void SendMessage(string message) {
+            writer.WriteLine(message);
+            writer.Flush();
         }
 
         void ProcessServerResponse() {
             string serverMessage;
 
             while((serverMessage = reader.ReadLine()) != null) {
-                Console.WriteLine(serverMessage);
-
-                if (serverMessage == "Bye") {
-                    client.Close();
-                    break;
-                }
+                messageForm.UpdateChatWindow(serverMessage);
             }
         }
     }
