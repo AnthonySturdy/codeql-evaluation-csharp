@@ -11,9 +11,9 @@ using System.Net.Sockets;
 namespace SimpleServer {
     class Client {
         Socket socket;
-        NetworkStream stream;
-        public StreamReader reader { get; private set; }
-        public StreamWriter writer { get; private set; }
+        public NetworkStream stream;
+        public BinaryReader reader { get; private set; }
+        //public StreamWriter writer { get; private set; }
         public int clientNumber;
         public string clientUsername;
 
@@ -21,8 +21,8 @@ namespace SimpleServer {
             socket = _socket;
 
             stream = new NetworkStream(socket);
-            reader = new StreamReader(stream);
-            writer = new StreamWriter(stream);
+            reader = new BinaryReader(stream);
+            //writer = new StreamWriter(stream);
         }
 
         public void Close() {

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Shared;
 
 
 namespace SimpleClient {
@@ -28,7 +29,29 @@ namespace SimpleClient {
                 if (OutputBox.InvokeRequired) {
                     Invoke(_updateChatWindowDelegate, message);
                 } else {
-                    OutputBox.Text += (message + "\r\n");
+                    //Split string (to extract username)
+                    string[] messageSplit = message.Split(':');
+
+                    if(messageSplit.Length == 1) {
+                        //If only 1, it's a server message
+                        OutputBox.SelectionColor = Color.Navy;
+                        OutputBox.AppendText(message + "\n");
+                    } else {
+                        //Print username in colour
+                        OutputBox.SelectionColor = Color.Crimson;
+                        OutputBox.AppendText(messageSplit[0] + ":");
+
+                        //Join rest of split string (if more than 1 ':')
+                        string msg = "";
+                        for (int i = 1; i < messageSplit.Length; i++)
+                            msg += messageSplit[i];
+
+                        //Write rest of string in black
+                        OutputBox.SelectionColor = Color.Black;
+                        OutputBox.AppendText(msg + "\n");
+                    }
+
+                    //Change selection start and scroll to it
                     OutputBox.SelectionStart = OutputBox.Text.Length;
                     OutputBox.ScrollToCaret();
                 }
@@ -58,6 +81,13 @@ namespace SimpleClient {
         }
 
         private void ConnectButton_Click(object sender, EventArgs e) {
+            //Username check
+            if (string.IsNullOrWhiteSpace(UsernameTextBox.Text)) {
+                UpdateChatWindow("Please input a valid username");
+                return;
+            }
+
+            //Attempt connection
             if(client.Connect(IPTextBox.Text, (int)PortNumberBox.Value)) {
                 InputBox.Enabled = true;
                 SendButton.Enabled = true;

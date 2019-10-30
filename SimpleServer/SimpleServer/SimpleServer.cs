@@ -7,16 +7,20 @@ using System.Threading;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using Shared;
 
 namespace SimpleServer {
     class SimpleServer {
         TcpListener listener;
+        MemoryStream memStream = new MemoryStream();
+        BinaryFormatter binFormatter = new BinaryFormatter();
+
 
         List<Client> clients;
 
         public SimpleServer(string ipAddress, int port) {
             listener = new TcpListener(IPAddress.Parse(ipAddress), port);
-
             clients = new List<Client>();
         }
 
@@ -37,7 +41,6 @@ namespace SimpleServer {
         void CreateClient() {
             //Create socket
             Socket socket = listener.AcceptSocket();
-            Console.WriteLine("New socket accepted");
 
             //Create client
             Client c = new Client(socket);
@@ -56,14 +59,25 @@ namespace SimpleServer {
             //Cast object to Client object
             Client client = (Client)clientObj;
 
-            string receivedMessage;
 
-            client.writer.WriteLine("Welcome client " + client.clientNumber);
-            client.writer.Flush();
+            Console.WriteLine("Client " + client.clientNumber + " joined.");
+            MessageAllClients("Client " + client.clientNumber + " joined.");
 
-            while ((receivedMessage = client.reader.ReadLine()) != null) {
-                Console.WriteLine("Client " + client.clientNumber + ": " + receivedMessage);    //Write incoming messages to server window
-                MessageAllClients("Client " + client.clientNumber + ": " + receivedMessage);
+            int noOfIncomingBytes;
+            while ((noOfIncomingBytes = client.reader.ReadInt32()) != 0) {
+                byte[] buffer = client.reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
+                MemoryStream ms = new MemoryStream(buffer);
+                binFormatter.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
+                Packet p = binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
+
+                switch (p.type) {
+                    case PacketType.CHATMESSAGE:
+                        ChatMessagePacket _p = binFormatter.Deserialize(memStream) as ChatMessagePacket;
+                        Console.WriteLine("Client " + client.clientNumber + ": " + _p.message);    //Write incoming messages to server window
+                        MessageAllClients("Client " + client.clientNumber + ": " + _p.message);     
+                        break;
+                }
+                
             }
 
             int clientExitNum = client.clientNumber;
@@ -90,10 +104,24 @@ namespace SimpleServer {
         }
 
         void MessageAllClients(string message) {
+            Packet p = new ChatMessagePacket(message);
+
             for (int i = 0; i < clients.Count; i++) {
-                clients[i].writer.WriteLine(message);
-                clients[i].writer.Flush();
+                Send(p, i);
             }
+        }
+
+        public void Send(Packet data, int clientIndex) {
+            BinaryWriter _writer = new BinaryWriter(clients[clientIndex].stream);
+
+            binFormatter.Serialize(memStream, data);
+            byte[] buffer = memStream.GetBuffer();
+
+            _writer.Write(buffer.Length);
+            _writer.Write(buffer);
+            _writer.Flush();
+
+            memStream.Dispose();
         }
 
     }

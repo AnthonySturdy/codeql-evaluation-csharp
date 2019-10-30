@@ -25,7 +25,6 @@
         private void InitializeComponent() {
             this.SendButton = new System.Windows.Forms.Button();
             this.InputBox = new System.Windows.Forms.TextBox();
-            this.OutputBox = new System.Windows.Forms.TextBox();
             this.UsernameTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -34,6 +33,7 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.PortNumberBox = new System.Windows.Forms.NumericUpDown();
             this.DisconnectButton = new System.Windows.Forms.Button();
+            this.OutputBox = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.PortNumberBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -41,7 +41,7 @@
             // 
             this.SendButton.Enabled = false;
             this.SendButton.Location = new System.Drawing.Point(477, 382);
-            this.SendButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.SendButton.Margin = new System.Windows.Forms.Padding(2);
             this.SendButton.Name = "SendButton";
             this.SendButton.Size = new System.Drawing.Size(96, 21);
             this.SendButton.TabIndex = 0;
@@ -53,21 +53,11 @@
             // 
             this.InputBox.Enabled = false;
             this.InputBox.Location = new System.Drawing.Point(11, 382);
-            this.InputBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.InputBox.Margin = new System.Windows.Forms.Padding(2);
             this.InputBox.Name = "InputBox";
             this.InputBox.Size = new System.Drawing.Size(462, 20);
             this.InputBox.TabIndex = 1;
             this.InputBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.InputBox_KeyDown);
-            // 
-            // OutputBox
-            // 
-            this.OutputBox.Location = new System.Drawing.Point(11, 50);
-            this.OutputBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.OutputBox.Multiline = true;
-            this.OutputBox.Name = "OutputBox";
-            this.OutputBox.ReadOnly = true;
-            this.OutputBox.Size = new System.Drawing.Size(562, 328);
-            this.OutputBox.TabIndex = 2;
             // 
             // UsernameTextBox
             // 
@@ -76,6 +66,7 @@
             this.UsernameTextBox.Name = "UsernameTextBox";
             this.UsernameTextBox.Size = new System.Drawing.Size(187, 20);
             this.UsernameTextBox.TabIndex = 3;
+            this.UsernameTextBox.Text = "jhg";
             // 
             // label1
             // 
@@ -152,11 +143,21 @@
             this.DisconnectButton.UseVisualStyleBackColor = true;
             this.DisconnectButton.Click += new System.EventHandler(this.DisconnectButton_Click);
             // 
+            // OutputBox
+            // 
+            this.OutputBox.Location = new System.Drawing.Point(12, 51);
+            this.OutputBox.Name = "OutputBox";
+            this.OutputBox.ReadOnly = true;
+            this.OutputBox.Size = new System.Drawing.Size(560, 326);
+            this.OutputBox.TabIndex = 12;
+            this.OutputBox.Text = "";
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 409);
+            this.Controls.Add(this.OutputBox);
             this.Controls.Add(this.DisconnectButton);
             this.Controls.Add(this.PortNumberBox);
             this.Controls.Add(this.ConnectButton);
@@ -165,10 +166,11 @@
             this.Controls.Add(this.IPTextBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.UsernameTextBox);
-            this.Controls.Add(this.OutputBox);
             this.Controls.Add(this.InputBox);
             this.Controls.Add(this.SendButton);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
             this.Name = "ClientForm";
             this.Text = "Chat Room / Anthony Sturdy";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ClientForm_FormClosed);
@@ -183,7 +185,6 @@
 
         private System.Windows.Forms.Button SendButton;
         private System.Windows.Forms.TextBox InputBox;
-        private System.Windows.Forms.TextBox OutputBox;
         private System.Windows.Forms.TextBox UsernameTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -192,5 +193,6 @@
         private System.Windows.Forms.Button ConnectButton;
         private System.Windows.Forms.NumericUpDown PortNumberBox;
         private System.Windows.Forms.Button DisconnectButton;
+        private System.Windows.Forms.RichTextBox OutputBox;
     }
 }
