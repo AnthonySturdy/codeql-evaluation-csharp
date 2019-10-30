@@ -67,7 +67,6 @@ namespace SimpleServer {
             while ((noOfIncomingBytes = client.reader.ReadInt32()) != 0) {
                 byte[] buffer = client.reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
                 MemoryStream ms = new MemoryStream(buffer);
-                binFormatter.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
                 Packet p = binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
 
                 switch (p.type) {

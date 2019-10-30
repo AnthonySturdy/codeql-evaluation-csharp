@@ -91,7 +91,7 @@ namespace SimpleClient {
             while((noOfIncomingBytes = reader.ReadInt32()) != 0) {
                 byte[] buffer = reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
                 MemoryStream ms = new MemoryStream(buffer);
-                Packet p = (Packet)binFormatter.Deserialize(ms);   //Deserialize MemoryStream to Packet
+                Packet p = binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
 
                 switch (p.type) {
                     case PacketType.CHATMESSAGE:
