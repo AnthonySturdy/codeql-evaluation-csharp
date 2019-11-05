@@ -7,14 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleServer", "SimpleServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleClient", "SimpleClient\SimpleClient.csproj", "{CDA5D544-1333-46F2-900A-5900C5C310CA}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{66A93801-4467-4EE3-B2A2-AD55265535D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedClassLibrary", "SharedClassLibrary\SharedClassLibrary.csproj", "{5E148278-6439-45F0-9997-5F6963AB1D50}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Shared\Shared.projitems*{66a93801-4467-4ee3-b2a2-ad55265535d2}*SharedItemsImports = 13
-		Shared\Shared.projitems*{cda5d544-1333-46f2-900a-5900c5c310ca}*SharedItemsImports = 4
-		Shared\Shared.projitems*{f58dd07e-33cb-41ec-9c64-6c88df396adb}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -28,6 +23,10 @@ Global
 		{CDA5D544-1333-46F2-900A-5900C5C310CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDA5D544-1333-46F2-900A-5900C5C310CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDA5D544-1333-46F2-900A-5900C5C310CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E148278-6439-45F0-9997-5F6963AB1D50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E148278-6439-45F0-9997-5F6963AB1D50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E148278-6439-45F0-9997-5F6963AB1D50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E148278-6439-45F0-9997-5F6963AB1D50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

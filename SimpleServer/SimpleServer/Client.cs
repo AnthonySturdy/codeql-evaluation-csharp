@@ -10,7 +10,7 @@ using System.Net.Sockets;
 
 namespace SimpleServer {
     class Client {
-        Socket socket;
+        public Socket socket;
         public NetworkStream stream;
         public BinaryReader reader { get; private set; }
         //public StreamWriter writer { get; private set; }

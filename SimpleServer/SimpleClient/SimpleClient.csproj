@@ -63,6 +63,11 @@
       <DependentUpon>ClientForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\SharedClassLibrary\SharedClassLibrary.csproj">
+      <Project>{5e148278-6439-45f0-9997-5f6963ab1d50}</Project>
+      <Name>SharedClassLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

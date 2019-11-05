@@ -8,12 +8,12 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using Shared;
+using SharedClassLibrary;
 
 namespace SimpleServer {
     class SimpleServer {
         TcpListener listener;
-        MemoryStream memStream = new MemoryStream();
+        MemoryStream memStream = new MemoryStream();    //Used to send packets
         BinaryFormatter binFormatter = new BinaryFormatter();
 
 
@@ -56,53 +56,52 @@ namespace SimpleServer {
         }
 
         void ClientMethod(object clientObj) {
+            //This function is ran on its own thread for each individual client
+
             //Cast object to Client object
             Client client = (Client)clientObj;
 
-
-            Console.WriteLine("Client " + client.clientNumber + " joined.");
-            MessageAllClients("Client " + client.clientNumber + " joined.");
-
+            bool exitLoop = false;
             int noOfIncomingBytes;
             while ((noOfIncomingBytes = client.reader.ReadInt32()) != 0) {
+                //Retrieve and deserialize packet
                 byte[] buffer = client.reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
                 MemoryStream ms = new MemoryStream(buffer);
                 Packet p = binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
 
+                //Use packets depending on type
                 switch (p.type) {
                     case PacketType.CHATMESSAGE:
-                        ChatMessagePacket _p = binFormatter.Deserialize(memStream) as ChatMessagePacket;
-                        Console.WriteLine("Client " + client.clientNumber + ": " + _p.message);    //Write incoming messages to server window
-                        MessageAllClients("Client " + client.clientNumber + ": " + _p.message);     
+                        ChatMessagePacket chatPacket = (ChatMessagePacket)p;
+                        MessageAllClients(client.clientUsername + ": " + chatPacket.message);     
+                        break;
+
+                    case PacketType.USERINFO:
+                        UserInfoPacket userPacket = (UserInfoPacket)p;
+                        client.clientUsername = userPacket.username;
+                        MessageAllClients(client.clientUsername + " joined.");
+                        break;
+
+                    case PacketType.DISCONNECT:
+                        exitLoop = true;
                         break;
                 }
-                
+
+                if (exitLoop)
+                    break;  //This is checked here (instead of the loop condition) because running client.reader.ReadInt32() after user disconnects, crashes the server
             }
 
-            int clientExitNum = client.clientNumber;
-
+            //When program gets here, client has left so remove from client list
             client.Close();
             clients.Remove(client);
 
-            Console.WriteLine("Client " + client.clientNumber + " exited.");
-            MessageAllClients("Client " + client.clientNumber + " exited.");
-        }
-
-        string GetReturnMessage(string code) {
-            string capMsg = code.ToUpper();
-
-            if (capMsg == "HI" || capMsg == "HELLO" || capMsg == "HEY") {
-                return "Hello";
-            } else if (capMsg == "JOKE" || capMsg == "TELL ME A JOKE") {
-                return "What do you call a zoo with only one dog? A shih-tzu.";
-            } else if (capMsg == "BYE") {
-                return "Bye";
-            } else {
-                return "I don't know what to say to that.";
-            }
+            //Announce quit to remaining clients
+            MessageAllClients(client.clientUsername + " exited.");
         }
 
         void MessageAllClients(string message) {
+            Console.WriteLine(message);
+
             Packet p = new ChatMessagePacket(message);
 
             for (int i = 0; i < clients.Count; i++) {
@@ -120,7 +119,7 @@ namespace SimpleServer {
             _writer.Write(buffer);
             _writer.Flush();
 
-            memStream.Dispose();
+            memStream.SetLength(0);
         }
 
     }

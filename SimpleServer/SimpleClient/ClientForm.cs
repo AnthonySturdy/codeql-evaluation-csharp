@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Shared;
 
 
 namespace SimpleClient {
@@ -88,7 +87,7 @@ namespace SimpleClient {
             }
 
             //Attempt connection
-            if(client.Connect(IPTextBox.Text, (int)PortNumberBox.Value)) {
+            if(client.Connect(IPTextBox.Text, (int)PortNumberBox.Value, UsernameTextBox.Text)) {
                 InputBox.Enabled = true;
                 SendButton.Enabled = true;
                 DisconnectButton.Enabled = true;

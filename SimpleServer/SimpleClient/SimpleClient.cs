@@ -10,7 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
-using Shared;
+using SharedClassLibrary;
 
 namespace SimpleClient {
     public class SimpleClient {
@@ -23,7 +23,7 @@ namespace SimpleClient {
 
         Thread readerThread;
 
-        MemoryStream memStream = new MemoryStream();
+        MemoryStream memStream = new MemoryStream();    //Used to send packets
         BinaryFormatter binFormatter = new BinaryFormatter();
 
         public SimpleClient() {
@@ -31,14 +31,14 @@ namespace SimpleClient {
             Application.Run(messageForm);
         }
 
-        public bool Connect(string ipAddress, int port) {
+        public bool Connect(string ipAddress, int port, string username) {
             try {
                 client = new TcpClient();
                 client.Connect(IPAddress.Parse(ipAddress), port);
                 stream = client.GetStream();
                 writer = new StreamWriter(stream);
                 reader = new BinaryReader(stream);
-                Run();
+                Run(username);
             } catch (Exception e) {
                 Console.WriteLine("Exception: " + e.Message);
                 return false;
@@ -47,12 +47,17 @@ namespace SimpleClient {
             return true;
         }
 
-        public void Run() {
+        public void Run(string username) {
             readerThread = new Thread(ProcessServerResponse);
             readerThread.Start();
+
+            Packet p = new UserInfoPacket(username);
+            Send(p);
         }
 
         public void Stop() {
+            Send(new DisconnectPacket());   //Let the server know the client is about to disconnect
+
             if(readerThread != null)
                 readerThread.Abort();
 
@@ -82,7 +87,7 @@ namespace SimpleClient {
             _writer.Write(buffer);
             _writer.Flush();
 
-            memStream.Dispose();
+            memStream.SetLength(0);
         }
 
         void ProcessServerResponse() {
@@ -95,8 +100,8 @@ namespace SimpleClient {
 
                 switch (p.type) {
                     case PacketType.CHATMESSAGE:
-                        ChatMessagePacket _p = binFormatter.Deserialize(memStream) as ChatMessagePacket;
-                        messageForm.UpdateChatWindow(_p.message);
+                        ChatMessagePacket chatPacket = (ChatMessagePacket)p;
+                        messageForm.UpdateChatWindow(chatPacket.message);
                         break;
                 }
             }
