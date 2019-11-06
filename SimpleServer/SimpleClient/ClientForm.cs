@@ -15,6 +15,9 @@ namespace SimpleClient {
         delegate void UpdateChatWindowDelegate(string message);
         UpdateChatWindowDelegate _updateChatWindowDelegate;
 
+        delegate void PopulateClientListDelegate(List<Tuple<Image, string>> clientList);
+        PopulateClientListDelegate _populateClientListDelegate;
+
         SimpleClient client;
 
         public ClientForm(SimpleClient c) {
@@ -61,25 +64,26 @@ namespace SimpleClient {
         }
 
         public void PopulateClientList(List<Tuple<Image, string>> clientList) {
-            ListView listView = new ListView();
+            ClientsListView.Invoke(new MethodInvoker(delegate () {
+                ClientsListView.Clear();
+            }));
 
             ImageList images = new ImageList();
             images.ImageSize = new Size(32, 32); //Shouldn't be able to be different to this anyway, just a precaution
-            
-            for(int i = 0; i < clientList.Count; i++) {
+
+            for (int i = 0; i < clientList.Count; i++) {
                 images.Images.Add(clientList[i].Item1);
             }
 
-            ClientsListView.SmallImageList = images;
+            ClientsListView.Invoke(new MethodInvoker(delegate () {
+                ClientsListView.SmallImageList = images;
+            }));
 
             for (int i = 0; i < clientList.Count; i++) {
-                ListViewItem item = new ListViewItem();
-                item.Text = clientList[i].Item2;
-                item.ImageIndex = i;
-                ClientsListView.Items.Add(item);
+                ClientsListView.Invoke(new MethodInvoker(delegate() {
+                    ClientsListView.Items.Add(clientList[i].Item2, i);
+                }));
             }
-
-            
         }
 
         private void SendButton_click(object sender, EventArgs e) {
@@ -133,6 +137,7 @@ namespace SimpleClient {
             UsernameTextBox.Enabled = true;
             IPTextBox.Enabled = true;
             PortNumberBox.Enabled = true;
+            ClientsListView.Clear();
         }
 
         private void ProfilePictureBox_Click(object sender, EventArgs e) {

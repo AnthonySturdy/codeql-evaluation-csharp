@@ -109,6 +109,12 @@ namespace SimpleServer {
 
             //Announce quit to remaining clients
             MessageAllClients(client.clientUsername + " exited.");
+            //Create client list packet when Client disconnects
+            List<Tuple<Image, string>> clientInfo = new List<Tuple<Image, string>>();
+            for (int i = 0; i < clients.Count; i++) {
+                clientInfo.Add(new Tuple<Image, string>(clients[i].profilePicture, clients[i].clientUsername));
+            }
+            SendPacketToAllClients(new ClientListPacket(clientInfo)); //Loop again to send packet to all clients
         }
 
         void MessageAllClients(string message) {

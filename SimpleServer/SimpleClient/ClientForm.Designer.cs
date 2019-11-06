@@ -43,10 +43,10 @@
             // SendButton
             // 
             this.SendButton.Enabled = false;
-            this.SendButton.Location = new System.Drawing.Point(477, 382);
-            this.SendButton.Margin = new System.Windows.Forms.Padding(2);
+            this.SendButton.Location = new System.Drawing.Point(636, 470);
+            this.SendButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SendButton.Name = "SendButton";
-            this.SendButton.Size = new System.Drawing.Size(96, 21);
+            this.SendButton.Size = new System.Drawing.Size(128, 26);
             this.SendButton.TabIndex = 0;
             this.SendButton.Text = "Send";
             this.SendButton.UseVisualStyleBackColor = true;
@@ -55,62 +55,67 @@
             // InputBox
             // 
             this.InputBox.Enabled = false;
-            this.InputBox.Location = new System.Drawing.Point(47, 382);
-            this.InputBox.Margin = new System.Windows.Forms.Padding(2);
+            this.InputBox.Location = new System.Drawing.Point(63, 470);
+            this.InputBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.InputBox.Name = "InputBox";
-            this.InputBox.Size = new System.Drawing.Size(426, 20);
+            this.InputBox.Size = new System.Drawing.Size(567, 22);
             this.InputBox.TabIndex = 1;
             this.InputBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.InputBox_KeyDown);
             // 
             // UsernameTextBox
             // 
-            this.UsernameTextBox.Location = new System.Drawing.Point(50, 24);
+            this.UsernameTextBox.Location = new System.Drawing.Point(67, 30);
+            this.UsernameTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.UsernameTextBox.MaxLength = 30;
             this.UsernameTextBox.Name = "UsernameTextBox";
-            this.UsernameTextBox.Size = new System.Drawing.Size(175, 20);
+            this.UsernameTextBox.Size = new System.Drawing.Size(232, 22);
             this.UsernameTextBox.TabIndex = 3;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(47, 8);
+            this.label1.Location = new System.Drawing.Point(63, 10);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
+            this.label1.Size = new System.Drawing.Size(73, 17);
             this.label1.TabIndex = 4;
             this.label1.Text = "Username";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(228, 9);
+            this.label2.Location = new System.Drawing.Point(304, 11);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 13);
+            this.label2.Size = new System.Drawing.Size(76, 17);
             this.label2.TabIndex = 6;
             this.label2.Text = "IP Address";
             // 
             // IPTextBox
             // 
-            this.IPTextBox.Location = new System.Drawing.Point(231, 25);
+            this.IPTextBox.Location = new System.Drawing.Point(308, 31);
+            this.IPTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.IPTextBox.Name = "IPTextBox";
-            this.IPTextBox.Size = new System.Drawing.Size(120, 20);
+            this.IPTextBox.Size = new System.Drawing.Size(159, 22);
             this.IPTextBox.TabIndex = 5;
             this.IPTextBox.Text = "127.0.0.1";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(354, 9);
+            this.label3.Location = new System.Drawing.Point(472, 11);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(26, 13);
+            this.label3.Size = new System.Drawing.Size(34, 17);
             this.label3.TabIndex = 8;
             this.label3.Text = "Port";
             // 
             // ConnectButton
             // 
-            this.ConnectButton.Location = new System.Drawing.Point(420, 25);
-            this.ConnectButton.Margin = new System.Windows.Forms.Padding(2);
+            this.ConnectButton.Location = new System.Drawing.Point(560, 31);
+            this.ConnectButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ConnectButton.Name = "ConnectButton";
-            this.ConnectButton.Size = new System.Drawing.Size(68, 21);
+            this.ConnectButton.Size = new System.Drawing.Size(91, 26);
             this.ConnectButton.TabIndex = 9;
             this.ConnectButton.Text = "Connect";
             this.ConnectButton.UseVisualStyleBackColor = true;
@@ -118,14 +123,15 @@
             // 
             // PortNumberBox
             // 
-            this.PortNumberBox.Location = new System.Drawing.Point(357, 25);
+            this.PortNumberBox.Location = new System.Drawing.Point(476, 31);
+            this.PortNumberBox.Margin = new System.Windows.Forms.Padding(4);
             this.PortNumberBox.Maximum = new decimal(new int[] {
             65535,
             0,
             0,
             0});
             this.PortNumberBox.Name = "PortNumberBox";
-            this.PortNumberBox.Size = new System.Drawing.Size(58, 20);
+            this.PortNumberBox.Size = new System.Drawing.Size(77, 22);
             this.PortNumberBox.TabIndex = 10;
             this.PortNumberBox.Value = new decimal(new int[] {
             4444,
@@ -136,10 +142,10 @@
             // DisconnectButton
             // 
             this.DisconnectButton.Enabled = false;
-            this.DisconnectButton.Location = new System.Drawing.Point(492, 25);
-            this.DisconnectButton.Margin = new System.Windows.Forms.Padding(2);
+            this.DisconnectButton.Location = new System.Drawing.Point(656, 31);
+            this.DisconnectButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.DisconnectButton.Name = "DisconnectButton";
-            this.DisconnectButton.Size = new System.Drawing.Size(81, 21);
+            this.DisconnectButton.Size = new System.Drawing.Size(108, 26);
             this.DisconnectButton.TabIndex = 11;
             this.DisconnectButton.Text = "Disconnect";
             this.DisconnectButton.UseVisualStyleBackColor = true;
@@ -147,22 +153,24 @@
             // 
             // OutputBox
             // 
-            this.OutputBox.Location = new System.Drawing.Point(12, 51);
+            this.OutputBox.Location = new System.Drawing.Point(16, 63);
+            this.OutputBox.Margin = new System.Windows.Forms.Padding(4);
             this.OutputBox.Name = "OutputBox";
             this.OutputBox.ReadOnly = true;
-            this.OutputBox.Size = new System.Drawing.Size(560, 326);
+            this.OutputBox.Size = new System.Drawing.Size(745, 400);
             this.OutputBox.TabIndex = 12;
             this.OutputBox.Text = "";
             // 
             // ClientsListView
             // 
             this.ClientsListView.HideSelection = false;
-            this.ClientsListView.Location = new System.Drawing.Point(578, 25);
+            this.ClientsListView.Location = new System.Drawing.Point(771, 31);
+            this.ClientsListView.Margin = new System.Windows.Forms.Padding(4);
             this.ClientsListView.Name = "ClientsListView";
-            this.ClientsListView.Size = new System.Drawing.Size(193, 377);
+            this.ClientsListView.Size = new System.Drawing.Size(256, 463);
             this.ClientsListView.TabIndex = 13;
             this.ClientsListView.UseCompatibleStateImageBehavior = false;
-            this.ClientsListView.View = System.Windows.Forms.View.Tile;
+            this.ClientsListView.View = System.Windows.Forms.View.SmallIcon;
             // 
             // ProfilePictureBox
             // 
@@ -170,9 +178,10 @@
             this.ProfilePictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ProfilePictureBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ProfilePictureBox.Image = global::SimpleClient.Properties.Resources.DefaultProfilePicture;
-            this.ProfilePictureBox.Location = new System.Drawing.Point(12, 12);
+            this.ProfilePictureBox.Location = new System.Drawing.Point(16, 15);
+            this.ProfilePictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.ProfilePictureBox.Name = "ProfilePictureBox";
-            this.ProfilePictureBox.Size = new System.Drawing.Size(32, 32);
+            this.ProfilePictureBox.Size = new System.Drawing.Size(43, 39);
             this.ProfilePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.ProfilePictureBox.TabIndex = 14;
             this.ProfilePictureBox.TabStop = false;
@@ -180,9 +189,9 @@
             // 
             // ClientForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(783, 409);
+            this.ClientSize = new System.Drawing.Size(1044, 503);
             this.Controls.Add(this.ProfilePictureBox);
             this.Controls.Add(this.ClientsListView);
             this.Controls.Add(this.OutputBox);
@@ -197,7 +206,7 @@
             this.Controls.Add(this.InputBox);
             this.Controls.Add(this.SendButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.Name = "ClientForm";
             this.Text = "Chat Room / Anthony Sturdy";
