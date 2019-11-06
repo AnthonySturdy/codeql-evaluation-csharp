@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 
 namespace SimpleClient {
@@ -59,6 +60,28 @@ namespace SimpleClient {
             }
         }
 
+        public void PopulateClientList(List<Tuple<Image, string>> clientList) {
+            ListView listView = new ListView();
+
+            ImageList images = new ImageList();
+            images.ImageSize = new Size(32, 32); //Shouldn't be able to be different to this anyway, just a precaution
+            
+            for(int i = 0; i < clientList.Count; i++) {
+                images.Images.Add(clientList[i].Item1);
+            }
+
+            ClientsListView.SmallImageList = images;
+
+            for (int i = 0; i < clientList.Count; i++) {
+                ListViewItem item = new ListViewItem();
+                item.Text = clientList[i].Item2;
+                item.ImageIndex = i;
+                ClientsListView.Items.Add(item);
+            }
+
+            
+        }
+
         private void SendButton_click(object sender, EventArgs e) {
             client.SendMessage(InputBox.Text);
             InputBox.Text = "";
@@ -87,7 +110,7 @@ namespace SimpleClient {
             }
 
             //Attempt connection
-            if(client.Connect(IPTextBox.Text, (int)PortNumberBox.Value, UsernameTextBox.Text)) {
+            if (client.Connect(IPTextBox.Text, (int)PortNumberBox.Value, UsernameTextBox.Text, ProfilePictureBox.Image)) {
                 InputBox.Enabled = true;
                 SendButton.Enabled = true;
                 DisconnectButton.Enabled = true;
@@ -110,6 +133,22 @@ namespace SimpleClient {
             UsernameTextBox.Enabled = true;
             IPTextBox.Enabled = true;
             PortNumberBox.Enabled = true;
+        }
+
+        private void ProfilePictureBox_Click(object sender, EventArgs e) {
+            //Has to be on a thread to avoid 'Current thread must be set to single thread apartment' error.
+            Thread t = new Thread(OpenProfilePictureSelectionDialogue);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            t.Join();
+        }
+        void OpenProfilePictureSelectionDialogue() {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Choose Image(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp";
+            if (ofd.ShowDialog() == DialogResult.OK) {
+                ProfilePictureBox.Image = Image.FromFile(ofd.FileName);
+                ProfilePictureBox.Image = (Image)(new Bitmap(ProfilePictureBox.Image, new Size(32, 32)));   //Resize to 32x32, this is the maximum it will be displayed at will be quicker than sending an unnecassarily big image
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
 using System.Net;
+using System.Drawing;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -29,16 +30,17 @@ namespace SimpleClient {
         public SimpleClient() {
             messageForm = new ClientForm(this);
             Application.Run(messageForm);
+            
         }
 
-        public bool Connect(string ipAddress, int port, string username) {
+        public bool Connect(string ipAddress, int port, string username, Image profilePic) {
             try {
                 client = new TcpClient();
                 client.Connect(IPAddress.Parse(ipAddress), port);
                 stream = client.GetStream();
                 writer = new StreamWriter(stream);
                 reader = new BinaryReader(stream);
-                Run(username);
+                Run(username, profilePic);
             } catch (Exception e) {
                 Console.WriteLine("Exception: " + e.Message);
                 return false;
@@ -47,11 +49,11 @@ namespace SimpleClient {
             return true;
         }
 
-        public void Run(string username) {
+        public void Run(string username, Image profilePic) {
             readerThread = new Thread(ProcessServerResponse);
             readerThread.Start();
 
-            Packet p = new UserInfoPacket(username);
+            Packet p = new UserInfoPacket(username, profilePic);
             Send(p);
         }
 
@@ -72,12 +74,13 @@ namespace SimpleClient {
             }
         }
 
-        public void SetUserInfo(string username) {
-            Packet p = new UserInfoPacket(username);
-            Send(p);
-        }
-
         public void Send(Packet data) {
+            if (client == null)
+                return;
+
+            if (!client.Connected) 
+                return;
+
             BinaryWriter _writer = new BinaryWriter(stream);
 
             binFormatter.Serialize(memStream, data);
@@ -102,6 +105,11 @@ namespace SimpleClient {
                     case PacketType.CHATMESSAGE:
                         ChatMessagePacket chatPacket = (ChatMessagePacket)p;
                         messageForm.UpdateChatWindow(chatPacket.message);
+                        break;
+
+                    case PacketType.CLIENTLIST:
+                        ClientListPacket clientListPacket = (ClientListPacket)p;
+                        messageForm.PopulateClientList(clientListPacket.clientInformation);
                         break;
                 }
             }

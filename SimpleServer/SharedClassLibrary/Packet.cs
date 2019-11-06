@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 
 namespace SharedClassLibrary {
     [Serializable]
@@ -8,7 +9,8 @@ namespace SharedClassLibrary {
         EMPTY,
         CHATMESSAGE,
         USERINFO,
-        DISCONNECT
+        DISCONNECT,
+        CLIENTLIST
     }
 
     //Packet parent object
@@ -21,10 +23,12 @@ namespace SharedClassLibrary {
     [Serializable]
     public class UserInfoPacket : Packet {
         public string username = "";
+        public Image profilePicture;
 
-        public UserInfoPacket(string username) {
+        public UserInfoPacket(string username, Image profilePic) {
             this.type = PacketType.USERINFO;
             this.username = username;
+            this.profilePicture = profilePic;
         }
     }
 
@@ -43,6 +47,16 @@ namespace SharedClassLibrary {
     public class DisconnectPacket : Packet {
         public DisconnectPacket() {
             this.type = PacketType.DISCONNECT;
+        }
+    }
+
+    [Serializable]
+    public class ClientListPacket : Packet {
+        public List<Tuple<Image, string>> clientInformation;    //List of client profile pictures and usernames
+
+        public ClientListPacket(List<Tuple<Image, string>> clientList) {
+            this.type = PacketType.CLIENTLIST;
+            this.clientInformation = clientList;
         }
     }
 }

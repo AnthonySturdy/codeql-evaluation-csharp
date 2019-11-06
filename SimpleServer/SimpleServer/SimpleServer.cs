@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -25,6 +25,7 @@ namespace SimpleServer {
         }
 
         public void Start() {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("* SERVER START *");
 
             listener.Start();
@@ -48,7 +49,9 @@ namespace SimpleServer {
                 c.clientNumber = 0;
             else
                 c.clientNumber = clients[clients.Count - 1].clientNumber + 1;
-            clients.Add(c); 
+            clients.Add(c);
+
+           
 
             //Handle this client on a new thread
             Thread t = new Thread(new ParameterizedThreadStart(ClientMethod));  
@@ -56,7 +59,7 @@ namespace SimpleServer {
         }
 
         void ClientMethod(object clientObj) {
-            //This function is ran on its own thread for each individual client
+            //This function is ran on its own thread recieving messages from an individual client
 
             //Cast object to Client object
             Client client = (Client)clientObj;
@@ -79,7 +82,16 @@ namespace SimpleServer {
                     case PacketType.USERINFO:
                         UserInfoPacket userPacket = (UserInfoPacket)p;
                         client.clientUsername = userPacket.username;
-                        MessageAllClients(client.clientUsername + " joined.");
+                        client.profilePicture = userPacket.profilePicture;
+
+                        MessageAllClients(client.clientUsername + " joined.");  //Announce join
+
+                        //Create client list packet when Client joins
+                        List<Tuple<Image, string>> info = new List<Tuple<Image, string>>();
+                        for (int i = 0; i < clients.Count; i++) {
+                            info.Add(new Tuple<Image, string>(clients[i].profilePicture, clients[i].clientUsername));
+                        }
+                        SendPacketToAllClients(new ClientListPacket(info)); //Loop again to send packet to all clients
                         break;
 
                     case PacketType.DISCONNECT:
@@ -100,11 +112,21 @@ namespace SimpleServer {
         }
 
         void MessageAllClients(string message) {
+            if (message.Contains(':'))
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(message);
 
             Packet p = new ChatMessagePacket(message);
 
             for (int i = 0; i < clients.Count; i++) {
+                Send(p, i);
+            }
+        }
+
+        void SendPacketToAllClients(Packet p) {
+            for(int i = 0; i < clients.Count; i++) {
                 Send(p, i);
             }
         }
