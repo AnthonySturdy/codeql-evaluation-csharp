@@ -81,5 +81,8 @@
   <ItemGroup>
     <None Include="Resources\DefaultProfilePicture.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\file+attachment+clip+file+paperclip+icon-1320190556905027615.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

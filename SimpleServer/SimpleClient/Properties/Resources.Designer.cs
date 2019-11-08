@@ -69,5 +69,15 @@ namespace SimpleClient.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_attachment_clip_file_paperclip_icon_1320190556905027615 {
+            get {
+                object obj = ResourceManager.GetObject("file_attachment_clip_file_paperclip_icon_1320190556905027615", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

@@ -107,6 +107,11 @@ namespace SimpleClient {
                         messageForm.UpdateChatWindow(chatPacket.message);
                         break;
 
+                    case PacketType.IMAGEMESSAGE:
+                        ImageMessagePacket imgPacket = (ImageMessagePacket)p;
+                        messageForm.AddImageToChatWindow(imgPacket.image);
+                        break;
+
                     case PacketType.CLIENTLIST:
                         ClientListPacket clientListPacket = (ClientListPacket)p;
                         messageForm.PopulateClientList(clientListPacket.clientInformation);

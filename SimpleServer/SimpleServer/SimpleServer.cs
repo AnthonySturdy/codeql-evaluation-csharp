@@ -79,6 +79,15 @@ namespace SimpleServer {
                         MessageAllClients(client.clientUsername + ": " + chatPacket.message);     
                         break;
 
+                    case PacketType.IMAGEMESSAGE:
+                        ImageMessagePacket imgPacket = (ImageMessagePacket)p;
+                        MessageAllClients(client.clientUsername + ": ");    //Send this so others know who sent the image
+                        Console.WriteLine("IMAGE SENT");
+                        SendPacketToAllClients(imgPacket);
+                        MessageAllClients("");    //New line after image sent
+
+                        break;
+
                     case PacketType.USERINFO:
                         UserInfoPacket userPacket = (UserInfoPacket)p;
                         client.clientUsername = userPacket.username;
@@ -91,7 +100,7 @@ namespace SimpleServer {
                         for (int i = 0; i < clients.Count; i++) {
                             info.Add(new Tuple<Image, string>(clients[i].profilePicture, clients[i].clientUsername));
                         }
-                        SendPacketToAllClients(new ClientListPacket(info)); //Loop again to send packet to all clients
+                        SendPacketToAllClients(new ClientListPacket(info));
                         break;
 
                     case PacketType.DISCONNECT:
@@ -100,7 +109,7 @@ namespace SimpleServer {
                 }
 
                 if (exitLoop)
-                    break;  //This is checked here (instead of the loop condition) because running client.reader.ReadInt32() after user disconnects, crashes the server
+                    break;  //This is checked here (instead of the loop condition) because calling client.reader.ReadInt32() after user disconnects, crashes the server
             }
 
             //When program gets here, client has left so remove from client list

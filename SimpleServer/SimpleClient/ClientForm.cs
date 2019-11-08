@@ -8,15 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using SharedClassLibrary;
 
 
 namespace SimpleClient {
     public partial class ClientForm : Form {
         delegate void UpdateChatWindowDelegate(string message);
         UpdateChatWindowDelegate _updateChatWindowDelegate;
-
-        delegate void PopulateClientListDelegate(List<Tuple<Image, string>> clientList);
-        PopulateClientListDelegate _populateClientListDelegate;
 
         SimpleClient client;
 
@@ -63,8 +61,40 @@ namespace SimpleClient {
             }
         }
 
+        private void AttachImageButton_Click(object sender, EventArgs e) {
+            //Has to be on a thread to avoid 'Current thread must be set to single thread apartment' error.
+            Thread t = new Thread(delegate() {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Choose Image(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp";
+                ofd.Multiselect = false;
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    Image img = Image.FromFile(ofd.FileName);
+                    client.Send(new ImageMessagePacket(img));
+                }
+            });
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            t.Join();
+        }
+
+        public void AddImageToChatWindow(Image image) {
+            Thread t = new Thread(delegate () {
+                Bitmap bmp = new Bitmap(image);
+                Clipboard.SetImage(bmp);
+
+                OutputBox.Invoke(new MethodInvoker(delegate () {
+                    OutputBox.ReadOnly = false; //Can't use Paste() if in ReadOnly
+                    OutputBox.Paste();
+                    OutputBox.ReadOnly = true;
+                }));
+            });
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            t.Join();
+        }
+
         public void PopulateClientList(List<Tuple<Image, string>> clientList) {
-            ClientsListView.Invoke(new MethodInvoker(delegate () {
+            ClientsListView.Invoke(new MethodInvoker(delegate () {  //This is needed because ClientListView is on a different thread
                 ClientsListView.Clear();
             }));
 
@@ -75,12 +105,12 @@ namespace SimpleClient {
                 images.Images.Add(clientList[i].Item1);
             }
 
-            ClientsListView.Invoke(new MethodInvoker(delegate () {
+            ClientsListView.Invoke(new MethodInvoker(delegate () {  //This is needed because ClientListView is on a different thread
                 ClientsListView.SmallImageList = images;
             }));
 
             for (int i = 0; i < clientList.Count; i++) {
-                ClientsListView.Invoke(new MethodInvoker(delegate() {
+                ClientsListView.Invoke(new MethodInvoker(delegate() {   //This is needed because ClientListView is on a different thread
                     ClientsListView.Items.Add(clientList[i].Item2, i);
                 }));
             }
@@ -118,10 +148,12 @@ namespace SimpleClient {
                 InputBox.Enabled = true;
                 SendButton.Enabled = true;
                 DisconnectButton.Enabled = true;
+                AttachImageButton.Enabled = true;
                 ConnectButton.Enabled = false;
                 UsernameTextBox.Enabled = false;
                 IPTextBox.Enabled = false;
                 PortNumberBox.Enabled = false;
+                ProfilePictureBox.Enabled = false;
             } else {
                 UpdateChatWindow("Failed to connect to " + IPTextBox.Text + ":" + PortNumberBox.Value);
             }
@@ -133,27 +165,29 @@ namespace SimpleClient {
             InputBox.Enabled = false;
             SendButton.Enabled = false;
             DisconnectButton.Enabled = false;
+            AttachImageButton.Enabled = false;
             ConnectButton.Enabled = true;
             UsernameTextBox.Enabled = true;
             IPTextBox.Enabled = true;
             PortNumberBox.Enabled = true;
+            ProfilePictureBox.Enabled = true;
             ClientsListView.Clear();
         }
 
         private void ProfilePictureBox_Click(object sender, EventArgs e) {
             //Has to be on a thread to avoid 'Current thread must be set to single thread apartment' error.
-            Thread t = new Thread(OpenProfilePictureSelectionDialogue);
+            Thread t = new Thread(delegate () {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Choose Image(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp";
+                ofd.Multiselect = false;
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    ProfilePictureBox.Image = Image.FromFile(ofd.FileName);
+                    ProfilePictureBox.Image = (Image)(new Bitmap(ProfilePictureBox.Image, new Size(32, 32)));   //Resize to 32x32, this is the maximum it will be displayed at will be quicker than sending an unnecassarily big image
+                }
+            });
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
             t.Join();
-        }
-        void OpenProfilePictureSelectionDialogue() {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Choose Image(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp";
-            if (ofd.ShowDialog() == DialogResult.OK) {
-                ProfilePictureBox.Image = Image.FromFile(ofd.FileName);
-                ProfilePictureBox.Image = (Image)(new Bitmap(ProfilePictureBox.Image, new Size(32, 32)));   //Resize to 32x32, this is the maximum it will be displayed at will be quicker than sending an unnecassarily big image
-            }
         }
     }
 }

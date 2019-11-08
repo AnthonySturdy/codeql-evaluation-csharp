@@ -8,6 +8,7 @@ namespace SharedClassLibrary {
     public enum PacketType {
         EMPTY,
         CHATMESSAGE,
+        IMAGEMESSAGE,
         USERINFO,
         DISCONNECT,
         CLIENTLIST
@@ -40,6 +41,16 @@ namespace SharedClassLibrary {
         public ChatMessagePacket(string message) {
             this.type = PacketType.CHATMESSAGE;
             this.message = message;
+        }
+    }
+
+    [Serializable]
+    public class ImageMessagePacket : Packet {
+        public Image image;
+
+        public ImageMessagePacket(Image img) {
+            this.type = PacketType.IMAGEMESSAGE;
+            this.image = img;
         }
     }
 
