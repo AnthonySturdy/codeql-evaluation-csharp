@@ -16,7 +16,6 @@ namespace SimpleServer {
         MemoryStream memStream = new MemoryStream();    //Used to send packets
         BinaryFormatter binFormatter = new BinaryFormatter();
 
-
         List<Client> clients;
 
         public SimpleServer(string ipAddress, int port) {
@@ -44,86 +43,90 @@ namespace SimpleServer {
             Socket socket = listener.AcceptSocket();
 
             //Create client
-            Client c = new Client(socket, this);
+            Client c = new Client(socket);
             if (clients.Count == 0) //Set up client number (for identification)
                 c.clientNumber = 0;
             else
                 c.clientNumber = clients[clients.Count - 1].clientNumber + 1;
             clients.Add(c);
 
-           
-
             //Handle this client on a new thread
-            Thread t = new Thread(new ParameterizedThreadStart(ClientMethod));  
+            Thread t = new Thread(new ParameterizedThreadStart(TCPClientMethod));  
             t.Start(c);
         }
 
-        void ClientMethod(object clientObj) {
+        void TCPClientMethod(object clientObj) {
             //This function is ran on its own thread recieving messages from an individual client
 
-            //Cast object to Client object
             Client client = (Client)clientObj;
 
-            bool exitLoop = false;
-            int noOfIncomingBytes;
-            while ((noOfIncomingBytes = client.reader.ReadInt32()) != 0) {
-                //Retrieve and deserialize packet
-                byte[] buffer = client.reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
-                MemoryStream ms = new MemoryStream(buffer);
-                Packet p = binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
-
-                //Use packets depending on type
-                switch (p.type) {
-                    case PacketType.CHATMESSAGE:
-                        ChatMessagePacket chatPacket = (ChatMessagePacket)p;
-                        MessageAllClients(client.clientUsername + ": " + chatPacket.message);     
-                        break;
-
-                    case PacketType.IMAGEMESSAGE:
-                        ImageMessagePacket imgPacket = (ImageMessagePacket)p;
-                        MessageAllClients(client.clientUsername + ": ");    //Send this so others know who sent the image
-                        Console.WriteLine("IMAGE SENT");
-                        SendPacketToAllClients(imgPacket);
-                        MessageAllClients("");    //New line after image sent
-
-                        break;
-
-                    case PacketType.USERINFO:
-                        UserInfoPacket userPacket = (UserInfoPacket)p;
-                        client.clientUsername = userPacket.username;
-                        client.profilePicture = userPacket.profilePicture;
-
-                        MessageAllClients(client.clientUsername + " joined.");  //Announce join
-
-                        //Create client list packet when Client joins
-                        List<Tuple<Image, string>> info = new List<Tuple<Image, string>>();
-                        for (int i = 0; i < clients.Count; i++) {
-                            info.Add(new Tuple<Image, string>(clients[i].profilePicture, clients[i].clientUsername));
-                        }
-                        SendPacketToAllClients(new ClientListPacket(info));
-                        break;
-
-                    case PacketType.DISCONNECT:
-                        exitLoop = true;
-                        break;
-                }
-
-                if (exitLoop)
-                    break;  //This is checked here (instead of the loop condition) because calling client.reader.ReadInt32() after user disconnects, crashes the server
+            while (client.tcpSocket.Connected) {
+                HandlePacket(client.TCPRead(), client);
             }
 
+            //*CLIENT EXIT HANDLED HERE*//
             //When program gets here, client has left so remove from client list
             client.Close();
             clients.Remove(client);
 
             //Announce quit to remaining clients
             MessageAllClients(client.clientUsername + " exited.");
-            //Create client list packet when Client disconnects
+
+            //Create and send client list packets when Client disconnects
             List<Tuple<Image, string>> clientInfo = new List<Tuple<Image, string>>();
             for (int i = 0; i < clients.Count; i++) {
                 clientInfo.Add(new Tuple<Image, string>(clients[i].profilePicture, clients[i].clientUsername));
             }
             SendPacketToAllClients(new ClientListPacket(clientInfo)); //Loop again to send packet to all clients
+        }
+
+        void UDPClientMethod(object clientObj) {
+            Client client = (Client)clientObj;
+
+            while (client.udpSocket.Connected) {
+                HandlePacket(client.UDPRead(), client);
+            }
+        }
+
+        void HandlePacket(Packet p, Client client) {
+            switch (p.type) {
+                case PacketType.CHATMESSAGE:
+                    ChatMessagePacket chatPacket = (ChatMessagePacket)p;
+                    MessageAllClients(client.clientUsername + ": " + chatPacket.message);
+                    break;
+
+                case PacketType.IMAGEMESSAGE:
+                    ImageMessagePacket imgPacket = (ImageMessagePacket)p;
+                    MessageAllClients(client.clientUsername + ": ");    //Send this so others know who sent the image
+                    Console.WriteLine("IMAGE SENT");
+                    SendPacketToAllClients(imgPacket);
+                    MessageAllClients("");    //New line after image sent
+                    break;
+
+                case PacketType.USERINFO:
+                    UserInfoPacket userPacket = (UserInfoPacket)p;
+                    client.clientUsername = userPacket.username;
+                    client.profilePicture = userPacket.profilePicture;
+
+                    MessageAllClients(client.clientUsername + " joined.");  //Announce join
+
+                    //Create client list packet when Client joins
+                    List<Tuple<Image, string>> info = new List<Tuple<Image, string>>();
+                    for (int i = 0; i < clients.Count; i++) {
+                        info.Add(new Tuple<Image, string>(clients[i].profilePicture, clients[i].clientUsername));
+                    }
+                    SendPacketToAllClients(new ClientListPacket(info));
+                    break;
+
+                case PacketType.LOGINPACKET:
+                    LoginPacket loginPacket = (LoginPacket)p;
+
+                    client.UDPConnect(loginPacket.endpoint);
+
+                    Thread t = new Thread(new ParameterizedThreadStart(UDPClientMethod));
+                    t.Start(client);
+                    break;
+            }
         }
 
         void MessageAllClients(string message) {
@@ -136,27 +139,14 @@ namespace SimpleServer {
             Packet p = new ChatMessagePacket(message);
 
             for (int i = 0; i < clients.Count; i++) {
-                Send(p, i);
+                clients[i].TCPSend(p);
             }
         }
 
         void SendPacketToAllClients(Packet p) {
             for(int i = 0; i < clients.Count; i++) {
-                Send(p, i);
+                clients[i].TCPSend(p);
             }
-        }
-
-        public void Send(Packet data, int clientIndex) {
-            BinaryWriter _writer = new BinaryWriter(clients[clientIndex].stream);
-
-            binFormatter.Serialize(memStream, data);
-            byte[] buffer = memStream.GetBuffer();
-
-            _writer.Write(buffer.Length);
-            _writer.Write(buffer);
-            _writer.Flush();
-
-            memStream.SetLength(0);
         }
 
         public int GetClientIndex(Client c) {

@@ -37,7 +37,7 @@ namespace SharedClassLibrary {
 
     [Serializable]
     public class LoginPacket : Packet {
-        EndPoint endpoint;
+        public EndPoint endpoint;
 
         public LoginPacket(EndPoint _endpoint) {
             this.type = PacketType.LOGINPACKET;

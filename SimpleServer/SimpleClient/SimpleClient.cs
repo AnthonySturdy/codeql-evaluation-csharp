@@ -15,7 +15,11 @@ using SharedClassLibrary;
 
 namespace SimpleClient {
     public class SimpleClient {
+        IPAddress ip;
+        int port;
+
         TcpClient tcpClient;
+        UdpClient udpClient;
         StreamWriter writer;
         BinaryReader reader;
         NetworkStream stream;
@@ -32,13 +36,22 @@ namespace SimpleClient {
             Application.Run(messageForm);
         }
 
-        public bool Connect(string ipAddress, int port, string username, Image profilePic) {
+        public bool Connect(string _ipAddress, int _port, string username, Image profilePic) {
             try {
+                ip = IPAddress.Parse(_ipAddress);
+                port = _port;
+
                 tcpClient = new TcpClient();
-                tcpClient.Connect(IPAddress.Parse(ipAddress), port);
+                tcpClient.Connect(ip, port);
+
                 stream = tcpClient.GetStream();
                 writer = new StreamWriter(stream);
                 reader = new BinaryReader(stream);
+
+                udpClient = new UdpClient();
+                udpClient.Connect(ip, port);
+                TCPSend(new LoginPacket(udpClient.Client.LocalEndPoint));
+
                 Run(username, profilePic);
             } catch (Exception e) {
                 Console.WriteLine("Exception: " + e.Message);
@@ -49,7 +62,7 @@ namespace SimpleClient {
         }
 
         public void Run(string username, Image profilePic) {
-            readerThread = new Thread(ProcessServerResponse);
+            readerThread = new Thread(TCPRead);
             readerThread.Start();
 
             Packet p = new UserInfoPacket(username, profilePic);
@@ -92,13 +105,29 @@ namespace SimpleClient {
             memStream.SetLength(0);
         }
 
-        void ProcessServerResponse() {
+        public void UDPSend(Packet data) {
+            if (udpClient == null)
+                return;
+
+            binFormatter.Serialize(memStream, data);
+            byte[] buffer = memStream.GetBuffer();
+
+            udpClient.Send(buffer, buffer.Length);
+
+            memStream.SetLength(0);
+        }
+
+        Packet DeserialisePacket(byte[] buffer) {
+            MemoryStream ms = new MemoryStream(buffer);
+            return binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
+        }
+
+        void TCPRead() {
             int noOfIncomingBytes;
 
             while((noOfIncomingBytes = reader.ReadInt32()) != 0) {
                 byte[] buffer = reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
-                MemoryStream ms = new MemoryStream(buffer);
-                Packet p = binFormatter.Deserialize(ms) as Packet;   //Deserialize MemoryStream to Packet
+                Packet p = DeserialisePacket(buffer);
 
                 switch (p.type) {
                     case PacketType.CHATMESSAGE:
@@ -117,6 +146,13 @@ namespace SimpleClient {
                         break;
                 }
             }
+
+        }
+
+        void UDPRead() {
+            IPEndPoint endpoint = new IPEndPoint(ip, port);
+            byte[] buffer = udpClient.Receive(ref endpoint);
+            Packet p = DeserialisePacket(buffer);
 
         }
     }
