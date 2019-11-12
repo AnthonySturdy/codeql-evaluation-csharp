@@ -44,7 +44,7 @@ namespace SimpleServer {
             Socket socket = listener.AcceptSocket();
 
             //Create client
-            Client c = new Client(socket);
+            Client c = new Client(socket, this);
             if (clients.Count == 0) //Set up client number (for identification)
                 c.clientNumber = 0;
             else
@@ -157,6 +157,23 @@ namespace SimpleServer {
             _writer.Flush();
 
             memStream.SetLength(0);
+        }
+
+        public int GetClientIndex(Client c) {
+            for(int i = 0; i < clients.Count; i++) {
+                if (clients[i] == c)
+                    return i;
+            }
+
+            return -1;
+        }
+        public int GetClientIndex(string username) {
+            for (int i = 0; i < clients.Count; i++) {
+                if (clients[i].clientUsername == username)
+                    return i;
+            }
+
+            return -1;
         }
 
     }

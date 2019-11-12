@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
@@ -11,7 +12,8 @@ namespace SharedClassLibrary {
         IMAGEMESSAGE,
         USERINFO,
         DISCONNECT,
-        CLIENTLIST
+        CLIENTLIST,
+        LOGINPACKET
     }
 
     //Packet parent object
@@ -30,6 +32,16 @@ namespace SharedClassLibrary {
             this.type = PacketType.USERINFO;
             this.username = username;
             this.profilePicture = profilePic;
+        }
+    }
+
+    [Serializable]
+    public class LoginPacket : Packet {
+        EndPoint endpoint;
+
+        public LoginPacket(EndPoint _endpoint) {
+            this.type = PacketType.LOGINPACKET;
+            this.endpoint = _endpoint;
         }
     }
 

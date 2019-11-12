@@ -15,7 +15,7 @@ using SharedClassLibrary;
 
 namespace SimpleClient {
     public class SimpleClient {
-        TcpClient client;
+        TcpClient tcpClient;
         StreamWriter writer;
         BinaryReader reader;
         NetworkStream stream;
@@ -30,14 +30,13 @@ namespace SimpleClient {
         public SimpleClient() {
             messageForm = new ClientForm(this);
             Application.Run(messageForm);
-            
         }
 
         public bool Connect(string ipAddress, int port, string username, Image profilePic) {
             try {
-                client = new TcpClient();
-                client.Connect(IPAddress.Parse(ipAddress), port);
-                stream = client.GetStream();
+                tcpClient = new TcpClient();
+                tcpClient.Connect(IPAddress.Parse(ipAddress), port);
+                stream = tcpClient.GetStream();
                 writer = new StreamWriter(stream);
                 reader = new BinaryReader(stream);
                 Run(username, profilePic);
@@ -54,31 +53,31 @@ namespace SimpleClient {
             readerThread.Start();
 
             Packet p = new UserInfoPacket(username, profilePic);
-            Send(p);
+            TCPSend(p);
         }
 
         public void Stop() {
-            Send(new DisconnectPacket());   //Let the server know the client is about to disconnect
+            TCPSend(new DisconnectPacket());   //Let the server know the client is about to disconnect
 
             if(readerThread != null)
                 readerThread.Abort();
 
-            if(client != null)
-                client.Close();
+            if(tcpClient != null)
+                tcpClient.Close();
         }
 
         public void SendMessage(string message) {
             if (!string.IsNullOrWhiteSpace(message)) {
                 Packet p = new ChatMessagePacket(message);
-                Send(p);
+                TCPSend(p);
             }
         }
 
-        public void Send(Packet data) {
-            if (client == null)
+        public void TCPSend(Packet data) {
+            if (tcpClient == null)
                 return;
 
-            if (!client.Connected) 
+            if (!tcpClient.Connected) 
                 return;
 
             BinaryWriter _writer = new BinaryWriter(stream);

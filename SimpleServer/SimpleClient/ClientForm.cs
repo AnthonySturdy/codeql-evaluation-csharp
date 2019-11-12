@@ -69,7 +69,7 @@ namespace SimpleClient {
                 ofd.Multiselect = false;
                 if (ofd.ShowDialog() == DialogResult.OK) {
                     Image img = Image.FromFile(ofd.FileName);
-                    client.Send(new ImageMessagePacket(img));
+                    client.TCPSend(new ImageMessagePacket(img));
                 }
             });
             t.SetApartmentState(ApartmentState.STA);

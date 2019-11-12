@@ -7,10 +7,12 @@ using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using SharedClassLibrary;
 
 namespace SimpleServer {
     class Client {
-        public Socket socket;
+        public Socket tcpSocket;
+        public Socket udpSocket;
         public NetworkStream stream;
         public BinaryReader reader { get; private set; }
 
@@ -18,15 +20,25 @@ namespace SimpleServer {
         public string clientUsername;
         public Image profilePicture;
 
-        public Client(Socket _socket) {
-            socket = _socket;
+        SimpleServer serverInstance;
 
-            stream = new NetworkStream(socket);
+        public Client(Socket _socket, SimpleServer inst) {
+            tcpSocket = _socket;
+            udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            stream = new NetworkStream(tcpSocket);
             reader = new BinaryReader(stream);
+
+            serverInstance = inst;
+        }
+
+        void UDPConnect(EndPoint clientConnection) {
+            udpSocket.Connect(clientConnection);
+            serverInstance.Send(new LoginPacket(udpSocket.LocalEndPoint), serverInstance.GetClientIndex(this));
         }
 
         public void Close() {
-            socket.Close();
+            tcpSocket.Close();
         }
     }
 }
