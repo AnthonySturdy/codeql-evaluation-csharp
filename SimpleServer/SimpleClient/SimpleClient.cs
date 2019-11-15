@@ -128,23 +128,7 @@ namespace SimpleClient {
             while((noOfIncomingBytes = reader.ReadInt32()) != 0) {
                 byte[] buffer = reader.ReadBytes(noOfIncomingBytes); //Read bytes to array
                 Packet p = DeserialisePacket(buffer);
-
-                switch (p.type) {
-                    case PacketType.CHATMESSAGE:
-                        ChatMessagePacket chatPacket = (ChatMessagePacket)p;
-                        messageForm.UpdateChatWindow(chatPacket.message);
-                        break;
-
-                    case PacketType.IMAGEMESSAGE:
-                        ImageMessagePacket imgPacket = (ImageMessagePacket)p;
-                        messageForm.AddImageToChatWindow(imgPacket.image);
-                        break;
-
-                    case PacketType.CLIENTLIST:
-                        ClientListPacket clientListPacket = (ClientListPacket)p;
-                        messageForm.PopulateClientList(clientListPacket.clientInformation);
-                        break;
-                }
+                HandlePacket(p);
             }
 
         }
@@ -153,7 +137,31 @@ namespace SimpleClient {
             IPEndPoint endpoint = new IPEndPoint(ip, port);
             byte[] buffer = udpClient.Receive(ref endpoint);
             Packet p = DeserialisePacket(buffer);
+            HandlePacket(p);
+        }
 
+        void HandlePacket(Packet p) {
+            switch (p.type) {
+                case PacketType.CHATMESSAGE:
+                    ChatMessagePacket chatPacket = (ChatMessagePacket)p;
+                    messageForm.UpdateChatWindow(chatPacket.message);
+                    break;
+
+                case PacketType.IMAGEMESSAGE:
+                    ImageMessagePacket imgPacket = (ImageMessagePacket)p;
+                    messageForm.AddImageToChatWindow(imgPacket.image);
+                    break;
+
+                case PacketType.CLIENTLIST:
+                    ClientListPacket clientListPacket = (ClientListPacket)p;
+                    messageForm.PopulateClientList(clientListPacket.clientInformation);
+                    break;
+
+                case PacketType.LOGINPACKET:
+                    LoginPacket loginPacket = (LoginPacket)p;
+                    udpClient.Connect(loginPacket.endpoint);
+                    break;
+            }
         }
     }
 }

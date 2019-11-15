@@ -75,15 +75,20 @@ namespace SimpleServer {
         public Packet UDPRead() {
             byte[] bytes = new byte[256];
             int noOfIncomingBytes;
-            if((noOfIncomingBytes = udpSocket.Receive(bytes)) != 0) {
-                Packet p = DeserialisePacket(reader.ReadBytes(noOfIncomingBytes));
-                if (p.type == PacketType.DISCONNECT)
-                    Close();
+            try {
+                if ((noOfIncomingBytes = udpSocket.Receive(bytes)) != 0) {
+                    Packet p = DeserialisePacket(reader.ReadBytes(noOfIncomingBytes));
+                    if (p.type == PacketType.DISCONNECT)
+                        Close();
 
-                return p;
+                    return p;
+                }
+            } catch (SocketException e) {
+                Console.WriteLine(e.Message); //Get an error when user disconnects, this removes it
+                return new Packet();
             }
 
-            return null;
+            return new Packet();
         }
 
         public Packet DeserialisePacket(byte[] buffer) {
@@ -92,8 +97,8 @@ namespace SimpleServer {
         }
 
         public void Close() {
-            tcpSocket.Close();
             udpSocket.Close();
+            tcpSocket.Close();
         }
     }
 }
