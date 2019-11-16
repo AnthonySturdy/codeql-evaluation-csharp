@@ -82,7 +82,7 @@ namespace SimpleClient {
         public void SendMessage(string message) {
             if (!string.IsNullOrWhiteSpace(message)) {
                 Packet p = new ChatMessagePacket(message);
-                TCPSend(p);
+                UDPSend(p);
             }
         }
 
@@ -159,7 +159,9 @@ namespace SimpleClient {
 
                 case PacketType.LOGINPACKET:
                     LoginPacket loginPacket = (LoginPacket)p;
-                    udpClient.Connect(loginPacket.endpoint);
+                    udpClient.Connect((IPEndPoint)loginPacket.endpoint);
+                    Thread t = new Thread(UDPRead);
+                    t.Start();
                     break;
             }
         }

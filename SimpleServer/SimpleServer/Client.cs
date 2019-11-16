@@ -84,7 +84,7 @@ namespace SimpleServer {
                     return p;
                 }
             } catch (SocketException e) {
-                Console.WriteLine(e.Message); //Get an error when user disconnects, this removes it
+                //Console.WriteLine(e.Message); //Get an error when user disconnects, this removes it
                 return new Packet();
             }
 

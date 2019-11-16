@@ -64,7 +64,7 @@ namespace SimpleServer {
                 HandlePacket(client.TCPRead(), client);
             }
 
-            //*CLIENT EXIT HANDLED HERE*//
+            //CLIENT EXIT HANDLED HERE
             //When program gets here, client has left so remove from client list
             client.Close();
             clients.Remove(client);
