@@ -134,10 +134,12 @@ namespace SimpleClient {
         }
 
         void UDPRead() {
-            IPEndPoint endpoint = new IPEndPoint(ip, port);
-            byte[] buffer = udpClient.Receive(ref endpoint);
-            Packet p = DeserialisePacket(buffer);
-            HandlePacket(p);
+            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, 0);
+            while (true) {
+                byte[] buffer = udpClient.Receive(ref endpoint);
+                Packet p = DeserialisePacket(buffer);
+                HandlePacket(p);
+            }
         }
 
         void HandlePacket(Packet p) {

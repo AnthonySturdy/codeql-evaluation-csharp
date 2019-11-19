@@ -139,7 +139,7 @@ namespace SimpleServer {
             Packet p = new ChatMessagePacket(message);
 
             for (int i = 0; i < clients.Count; i++) {
-                clients[i].TCPSend(p);
+                clients[i].UDPSend(p);
             }
         }
 

@@ -73,11 +73,11 @@ namespace SimpleServer {
         }
 
         public Packet UDPRead() {
-            byte[] bytes = new byte[256];
+            byte[] bytes = new byte[1024*1024];
             int noOfIncomingBytes;
             try {
                 if ((noOfIncomingBytes = udpSocket.Receive(bytes)) != 0) {
-                    Packet p = DeserialisePacket(reader.ReadBytes(noOfIncomingBytes));
+                    Packet p = DeserialisePacket(bytes);
                     if (p.type == PacketType.DISCONNECT)
                         Close();
 
