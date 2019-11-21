@@ -56,6 +56,8 @@ namespace SimpleServer {
             byte[] buffer = memStream.GetBuffer();
 
             udpSocket.Send(buffer);
+
+            memStream.SetLength(0);
         }
 
         public Packet TCPRead() {

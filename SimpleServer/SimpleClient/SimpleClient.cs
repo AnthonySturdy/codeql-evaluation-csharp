@@ -82,7 +82,7 @@ namespace SimpleClient {
         public void SendMessage(string message) {
             if (!string.IsNullOrWhiteSpace(message)) {
                 Packet p = new ChatMessagePacket(message);
-                UDPSend(p);
+                TCPSend(p);
             }
         }
 
