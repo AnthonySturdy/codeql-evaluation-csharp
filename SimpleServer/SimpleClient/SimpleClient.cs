@@ -25,6 +25,7 @@ namespace SimpleClient {
         NetworkStream stream;
 
         ClientForm messageForm;
+        MonoGameForm gameForm;
 
         Thread readerThread;
 
@@ -171,7 +172,15 @@ namespace SimpleClient {
                     messageForm.UpdateChatWindow("- GAME REQUEST FROM USER " + gamePacket.senderUsername + ". TYPE /game " + gamePacket.senderUsername + " TO START -");
                     break;
 
+                case PacketType.GAME_START:
+                    gameForm = new MonoGameForm(this);
+                    gameForm.HandlePacket(p);
+                    gameForm.ShowDialog();
+                    break;
 
+                case PacketType.PLAYERCLIENTINFO:
+                    gameForm.HandlePacket(p);
+                    break;
             }
         }
     }

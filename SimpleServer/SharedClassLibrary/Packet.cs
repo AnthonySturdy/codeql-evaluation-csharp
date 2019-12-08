@@ -14,7 +14,9 @@ namespace SharedClassLibrary {
         DISCONNECT,
         CLIENTLIST,
         LOGINPACKET,
-        GAME_REQUEST
+        GAME_REQUEST,
+        GAME_START,
+        PLAYERCLIENTINFO
     }
 
     //Packet parent object
@@ -91,6 +93,32 @@ namespace SharedClassLibrary {
         public GameRequestPacket(string sender) {
             this.type = PacketType.GAME_REQUEST;
             this.senderUsername = sender;
+        }
+    }
+
+    [Serializable]
+    public class GameStartPacket : Packet {
+        public float startPosX, startPosY;
+        public Color colour;
+
+        public GameStartPacket(float _startPosX, float _startPosY, Color c) {
+            this.type = PacketType.GAME_START;
+            this.startPosX = _startPosX;
+            this.startPosY = _startPosY;
+            this.colour = c;
+        }
+    }
+
+    [Serializable]
+    public class PlayerClientInformationPacket : Packet {
+        public float posX, posY;
+        public float rotation;
+
+        public PlayerClientInformationPacket(float _posX, float _posY, float _rotation) {
+            this.type = PacketType.PLAYERCLIENTINFO;
+            this.posX = _posX;
+            this.posY = _posY;
+            this.rotation = _rotation;
         }
     }
 }

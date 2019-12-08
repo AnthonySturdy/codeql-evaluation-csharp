@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.drawTest1 = new DrawTest();
+            this.drawTest1 = new DrawTest(sc);
             this.SuspendLayout();
             // 
             // drawTest1
@@ -44,7 +44,7 @@
             this.ClientSize = new System.Drawing.Size(1100, 651);
             this.Controls.Add(this.drawTest1);
             this.Name = "MonoGameForm";
-            this.Text = "MonoGameForm";
+            this.Text = "Race Game";
             this.ResumeLayout(false);
 
         }

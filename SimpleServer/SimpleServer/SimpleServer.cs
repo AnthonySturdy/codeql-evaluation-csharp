@@ -149,6 +149,15 @@ namespace SimpleServer {
                     Thread t = new Thread(new ParameterizedThreadStart(UDPClientMethod));
                     t.Start(client);
                     break;
+
+                case PacketType.PLAYERCLIENTINFO:
+                    for (int i = 0; i < games.Count; i++) {      //Find which game packet is sent from
+                        if (games[i].clientList.Contains(client)) {
+                            games[i].ProcessPacket((PlayerClientInformationPacket)p, client);
+                            break;
+                        }
+                    }
+                    break;
             }
         }
 

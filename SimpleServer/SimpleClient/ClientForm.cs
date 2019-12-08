@@ -210,10 +210,5 @@ namespace SimpleClient {
                 //Do nothing
             }
         }
-
-        private void Button1_Click(object sender, EventArgs e) {
-            MonoGameForm form = new MonoGameForm();
-            form.ShowDialog();
-        }
     }
 }
