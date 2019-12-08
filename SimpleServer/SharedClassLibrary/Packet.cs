@@ -13,7 +13,8 @@ namespace SharedClassLibrary {
         USERINFO,
         DISCONNECT,
         CLIENTLIST,
-        LOGINPACKET
+        LOGINPACKET,
+        GAME_REQUEST
     }
 
     //Packet parent object
@@ -80,6 +81,16 @@ namespace SharedClassLibrary {
         public ClientListPacket(List<Tuple<Image, string>> clientList) {
             this.type = PacketType.CLIENTLIST;
             this.clientInformation = clientList;
+        }
+    }
+
+    [Serializable]
+    public class GameRequestPacket : Packet {
+        public string senderUsername;
+
+        public GameRequestPacket(string sender) {
+            this.type = PacketType.GAME_REQUEST;
+            this.senderUsername = sender;
         }
     }
 }

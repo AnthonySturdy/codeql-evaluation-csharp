@@ -165,6 +165,13 @@ namespace SimpleClient {
                     Thread t = new Thread(UDPRead);
                     t.Start();
                     break;
+
+                case PacketType.GAME_REQUEST:
+                    GameRequestPacket gamePacket = (GameRequestPacket)p;
+                    messageForm.UpdateChatWindow("- GAME REQUEST FROM USER " + gamePacket.senderUsername + ". TYPE /game " + gamePacket.senderUsername + " TO START -");
+                    break;
+
+
             }
         }
     }

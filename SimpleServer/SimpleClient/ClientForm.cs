@@ -35,7 +35,10 @@ namespace SimpleClient {
 
                     if(messageSplit.Length == 1) {
                         //If only 1, it's a server message
-                        OutputBox.SelectionColor = Color.Navy;
+                        if(message[0] == '-')
+                            OutputBox.SelectionColor = Color.DarkGreen;
+                        else 
+                            OutputBox.SelectionColor = Color.Navy;
                         OutputBox.AppendText(message + "\n");
                     } else {
                         //Print username in colour
@@ -69,6 +72,13 @@ namespace SimpleClient {
                 ofd.Multiselect = false;
                 if (ofd.ShowDialog() == DialogResult.OK) {
                     Image img = Image.FromFile(ofd.FileName);
+
+                    //Resize but maintain aspect ratio so user can't send huge files
+                    int maxSize = 300;
+                    float ratio = Math.Min((float)maxSize / img.Width, (float)maxSize / img.Height);    //Get smallest ratio
+                    Size s = new Size((int)(img.Width * ratio), (int)(img.Height * ratio));
+                    img = (Image)(new Bitmap(img, s));
+
                     client.TCPSend(new ImageMessagePacket(img));
                 }
             });
@@ -188,6 +198,22 @@ namespace SimpleClient {
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
             t.Join();
+        }
+
+        private void ClientsListView_DoubleClick(object sender, EventArgs e) {
+            try {   //If the clientlist element is double clicked but not on a user it throws an error
+                InputBox.Text = "@" + ClientsListView.SelectedItems[0].Text + " ";
+                InputBox.Select();
+                InputBox.SelectionStart = InputBox.Text.Length;
+                InputBox.SelectionLength = 0;
+            } catch {
+                //Do nothing
+            }
+        }
+
+        private void Button1_Click(object sender, EventArgs e) {
+            MonoGameForm form = new MonoGameForm();
+            form.ShowDialog();
         }
     }
 }

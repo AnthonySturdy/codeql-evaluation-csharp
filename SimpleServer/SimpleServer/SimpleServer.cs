@@ -17,6 +17,7 @@ namespace SimpleServer {
         BinaryFormatter binFormatter = new BinaryFormatter();
 
         List<Client> clients;
+        List<Game> games = new List<Game>();
 
         public SimpleServer(string ipAddress, int port) {
             listener = new TcpListener(IPAddress.Parse(ipAddress), port);
@@ -92,7 +93,29 @@ namespace SimpleServer {
             switch (p.type) {
                 case PacketType.CHATMESSAGE:
                     ChatMessagePacket chatPacket = (ChatMessagePacket)p;
-                    MessageAllClients(client.clientUsername + ": " + chatPacket.message);
+                    if (chatPacket.message[0] == '@') {  //If first character is '@', treat as direct message
+                        string recipient = chatPacket.message.Split(' ')[0];    //Get recipient name
+                        string message;
+                        try {
+                            message = chatPacket.message.Remove(0, recipient.Length + 1);    //Get remaining message. +1 for space after username.
+                        } catch {
+                            message = "";
+                        }
+                        recipient = recipient.Remove(0, 1);     //Remove the @ from username
+                        if (MessageIndividualClient(recipient, client.clientUsername + " -> You: " + message)) //If message succeeds (Succeeds if user is found)
+                            client.TCPSend(new ChatMessagePacket("You -> " + recipient + ": " + message));  //Display message back to sender
+                        else
+                            client.TCPSend(new ChatMessagePacket("Could not find " + recipient));   //If message fails (couldn't find user), inform the sender.
+
+                    } else if (chatPacket.message[0] == '/') {  //If first character is '/', treat as command
+                        string command = chatPacket.message.Split(' ')[0];
+                        List<string> parameters = chatPacket.message.Split(' ').ToList();
+                        if(parameters.Count > 1)
+                            parameters.RemoveAt(0);
+                        ExecuteCommand(command, parameters, client);
+                    } else {    //If first character none of above, treat as global message
+                        MessageAllClients(client.clientUsername + ": " + chatPacket.message);
+                    }
                     break;
 
                 case PacketType.IMAGEMESSAGE:
@@ -143,6 +166,19 @@ namespace SimpleServer {
             }
         }
 
+        bool MessageIndividualClient(string recipient, string message) {
+            int clientIndex = GetClientIndex(recipient);
+            if (clientIndex == -1)  //If can't find user
+                return false;
+
+            Client c = clients[clientIndex];
+            c.TCPSend(new ChatMessagePacket(message));
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            return true;
+        }
+
         void SendPacketToAllClients(Packet p) {
             for(int i = 0; i < clients.Count; i++) {
                 clients[i].TCPSend(p);
@@ -164,6 +200,41 @@ namespace SimpleServer {
             }
 
             return -1;
+        }
+
+        void ExecuteCommand(string command, List<string> parameters, Client client) {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(client.clientUsername + ": " + command);
+
+            if (command.ToLower() == "/help") {
+                string helpString = "--- HELP ---\n" +
+                    "- Send global chat messages by typing a message and pressing Send.\n" +
+                    "- Send private messages by double clicking a user on the list, typing your message then pressing Send.\n" +
+                    "- Send picture messages by pressing the button to the left of the input box and selecting an image.\n" +
+                    "- Send a game request by typing /game followed by the username you would like to challenge. E.g \"/game Sturdy\".\n" +
+                    "- Change your profile picture by disconnecting, clicking the profile picture icon, selecting a picture and reconnecting.";
+                client.TCPSend(new ChatMessagePacket(helpString));
+            } else if(command.ToLower() == "/game") {
+                if (parameters[0] == client.clientUsername)
+                    return;
+
+                int recipientIndex = GetClientIndex(parameters[0]);
+                if (recipientIndex == -1)
+                    return;
+
+                Client c = clients[recipientIndex];
+                for(int i = 0; i < games.Count; i++) {      //Check if challenged player is already in an empty game
+                    if (games[i].clientList.Contains(c) && games[i].clientList.Count == 1) {  //If is in an empty game, add client to game and start game
+                        games[i].clientList.Add(client);
+                        games[i].Start();
+                        return;
+                    }
+                }
+                c.TCPSend(new GameRequestPacket(client.clientUsername));
+                Game g = new Game();
+                g.clientList.Add(client);
+                games.Add(g);
+            }
         }
 
     }

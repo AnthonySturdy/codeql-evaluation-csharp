@@ -37,6 +37,7 @@
             this.ClientsListView = new System.Windows.Forms.ListView();
             this.AttachImageButton = new System.Windows.Forms.Button();
             this.ProfilePictureBox = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PortNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProfilePictureBox)).BeginInit();
             this.SuspendLayout();
@@ -160,11 +161,13 @@
             // 
             this.ClientsListView.HideSelection = false;
             this.ClientsListView.Location = new System.Drawing.Point(578, 25);
+            this.ClientsListView.MultiSelect = false;
             this.ClientsListView.Name = "ClientsListView";
             this.ClientsListView.Size = new System.Drawing.Size(193, 405);
             this.ClientsListView.TabIndex = 13;
             this.ClientsListView.UseCompatibleStateImageBehavior = false;
             this.ClientsListView.View = System.Windows.Forms.View.List;
+            this.ClientsListView.DoubleClick += new System.EventHandler(this.ClientsListView_DoubleClick);
             // 
             // AttachImageButton
             // 
@@ -192,11 +195,22 @@
             this.ProfilePictureBox.TabStop = false;
             this.ProfilePictureBox.Click += new System.EventHandler(this.ProfilePictureBox_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(789, 132);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 16;
+            this.button1.Text = "Test Game";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(783, 438);
+            this.ClientSize = new System.Drawing.Size(884, 438);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.AttachImageButton);
             this.Controls.Add(this.ProfilePictureBox);
             this.Controls.Add(this.ClientsListView);
@@ -241,5 +255,6 @@
         private System.Windows.Forms.ListView ClientsListView;
         private System.Windows.Forms.PictureBox ProfilePictureBox;
         private System.Windows.Forms.Button AttachImageButton;
+        private System.Windows.Forms.Button button1;
     }
 }
