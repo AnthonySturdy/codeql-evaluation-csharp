@@ -135,8 +135,8 @@ namespace SimpleClient {
         }
 
         void UDPRead() {
-            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, 0);
             while (true) {
+                IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, 0);
                 byte[] buffer = udpClient.Receive(ref endpoint);
                 Packet p = DeserialisePacket(buffer);
                 HandlePacket(p);
@@ -179,6 +179,10 @@ namespace SimpleClient {
                     break;
 
                 case PacketType.PLAYERCLIENTINFO:
+                    gameForm.HandlePacket(p);
+                    break;
+
+                case PacketType.CHECKPOINT:
                     gameForm.HandlePacket(p);
                     break;
             }

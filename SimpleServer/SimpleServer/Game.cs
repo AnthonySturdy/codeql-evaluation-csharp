@@ -92,14 +92,15 @@ namespace SimpleServer {
                 if(clientList[i] != sender) {   //Send info to other players
                     clientList[i].UDPSend(packet);
                 } else {
+                    Player p = playerList[i];
                     Vec2 playerPos = new Vec2(packet.posX, packet.posY);
-                    Vec2 checkPointPos = checkpoints[playerList[i].currentCheckpoint];
+                    Vec2 checkPointPos = checkpoints[p.currentCheckpoint];
                     float dist = (float)Math.Sqrt(Math.Pow(playerPos.x - checkPointPos.x, 2) + Math.Pow(playerPos.y - checkPointPos.y, 2));
                     if(dist < 40) {
-                        Player p = playerList[i];
                         p.currentCheckpoint++;
                         clientList[i].TCPSend(new CheckpointPacket(checkpoints[p.currentCheckpoint].x, checkpoints[p.currentCheckpoint].y));
                     }
+                    playerList[i] = p;
                 }
             }
         }
