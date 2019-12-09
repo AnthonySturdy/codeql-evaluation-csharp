@@ -16,7 +16,8 @@ namespace SharedClassLibrary {
         LOGINPACKET,
         GAME_REQUEST,
         GAME_START,
-        PLAYERCLIENTINFO
+        PLAYERCLIENTINFO,
+        CHECKPOINT
     }
 
     //Packet parent object
@@ -119,6 +120,17 @@ namespace SharedClassLibrary {
             this.posX = _posX;
             this.posY = _posY;
             this.rotation = _rotation;
+        }
+    }
+
+    [Serializable]
+    public class CheckpointPacket : Packet {
+        public float CheckPosX, CheckPosY;
+
+        public CheckpointPacket(float x, float y) {
+            this.type = PacketType.CHECKPOINT;
+            this.CheckPosX = x;
+            this.CheckPosY = y;
         }
     }
 }

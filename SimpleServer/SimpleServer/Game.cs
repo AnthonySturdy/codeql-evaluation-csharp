@@ -18,7 +18,7 @@ namespace SimpleServer {
         struct Vec2 {
             public float x, y;
 
-            public Vec2(int _x, int _y) {
+            public Vec2(float _x, float _y) {
                 x = _x;
                 y = _y;
             }
@@ -92,7 +92,14 @@ namespace SimpleServer {
                 if(clientList[i] != sender) {   //Send info to other players
                     clientList[i].UDPSend(packet);
                 } else {
-                    //Process information
+                    Vec2 playerPos = new Vec2(packet.posX, packet.posY);
+                    Vec2 checkPointPos = checkpoints[playerList[i].currentCheckpoint];
+                    float dist = (float)Math.Sqrt(Math.Pow(playerPos.x - checkPointPos.x, 2) + Math.Pow(playerPos.y - checkPointPos.y, 2));
+                    if(dist < 40) {
+                        Player p = playerList[i];
+                        p.currentCheckpoint++;
+                        clientList[i].TCPSend(new CheckpointPacket(checkpoints[p.currentCheckpoint].x, checkpoints[p.currentCheckpoint].y));
+                    }
                 }
             }
         }

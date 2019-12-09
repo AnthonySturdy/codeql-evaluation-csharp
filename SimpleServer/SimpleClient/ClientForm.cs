@@ -35,7 +35,7 @@ namespace SimpleClient {
 
                     if(messageSplit.Length == 1) {
                         //If only 1, it's a server message
-                        if(message[0] == '-')
+                        if(message != "" && message[0] == '-')
                             OutputBox.SelectionColor = Color.DarkGreen;
                         else 
                             OutputBox.SelectionColor = Color.Navy;
