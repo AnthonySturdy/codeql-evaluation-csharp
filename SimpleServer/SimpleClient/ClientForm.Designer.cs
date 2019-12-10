@@ -71,7 +71,6 @@
             this.UsernameTextBox.Name = "UsernameTextBox";
             this.UsernameTextBox.Size = new System.Drawing.Size(175, 20);
             this.UsernameTextBox.TabIndex = 3;
-            this.UsernameTextBox.Text = "test";
             // 
             // label1
             // 

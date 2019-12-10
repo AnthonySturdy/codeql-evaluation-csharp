@@ -133,13 +133,14 @@ namespace SimpleClient {
 
             Editor.spriteBatch.Draw(checkpointTexture, new Rectangle((int)checkpointPosX, (int)checkpointPosY, checkpointTexture.Width, checkpointTexture.Height), new Rectangle(0, 0, checkpointTexture.Width, checkpointTexture.Height), new Microsoft.Xna.Framework.Color(255, 255, 255, 100), 0, new Vector2(checkpointTexture.Width / 2, checkpointTexture.Height / 2), SpriteEffects.None, 1f);
 
+            /*
             string s = checkpointPosX + ", " + checkpointPosY;
             Editor.spriteBatch.DrawString(Editor.Font, s, new Vector2(
                 (Editor.graphics.Viewport.Width / 2) - (Editor.Font.MeasureString(s).X / 2),
                 (Editor.graphics.Viewport.Height / 2) - (Editor.FontHeight / 2)),
                 Microsoft.Xna.Framework.Color.White);
 
-            Editor.spriteBatch.End();
+            Editor.spriteBatch.End();*/
         }
 
         public void HandlePacket(Packet p) {
