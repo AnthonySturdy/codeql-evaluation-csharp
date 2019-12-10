@@ -34,6 +34,7 @@ namespace SimpleClient {
 
     public class DrawTest : MonoGame.Forms.Controls.MonoGameControl {
         SimpleClient simpleClientInst;
+        Form f;
 
         //Car movement is handled on the client.
         //Game checkpoint logic is handled on the server.
@@ -55,8 +56,9 @@ namespace SimpleClient {
 
         public long curFrame = 0;
 
-        public DrawTest(SimpleClient _simpleClientInst) {
+        public DrawTest(SimpleClient _simpleClientInst, Form form) {
             simpleClientInst = _simpleClientInst;
+            f = form;
         }
 
         protected override void Initialize() {
@@ -81,6 +83,10 @@ namespace SimpleClient {
 
         protected override void Update(GameTime gameTime) {
             base.Update(gameTime);
+
+            if(checkpointPosX == -100 && checkpointPosY == -100) {
+                f.Close();
+            }
 
             curFrame++;
 
@@ -153,13 +159,10 @@ namespace SimpleClient {
                     opponentCar.posX = clientInfoPacket.posX;
                     opponentCar.posY = clientInfoPacket.posY;
                     opponentCar.rotation = clientInfoPacket.rotation;
+                    checkpointPosX = clientInfoPacket.checkpointPosX;
+                    checkpointPosY = clientInfoPacket.checkpointPosY;
                     break;
 
-                case PacketType.CHECKPOINT:
-                    CheckpointPacket cpPacket = (CheckpointPacket)p;
-                    checkpointPosX = cpPacket.CheckPosX;
-                    checkpointPosY = cpPacket.CheckPosY;
-                    break;
             }
         }
     }

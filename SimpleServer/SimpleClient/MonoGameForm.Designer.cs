@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.drawTest1 = new DrawTest(sc);
+            this.drawTest1 = new DrawTest(sc, this);
             this.SuspendLayout();
             // 
             // drawTest1

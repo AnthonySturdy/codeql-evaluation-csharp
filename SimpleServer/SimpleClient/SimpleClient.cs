@@ -181,10 +181,6 @@ namespace SimpleClient {
                 case PacketType.PLAYERCLIENTINFO:
                     gameForm.HandlePacket(p);
                     break;
-
-                case PacketType.CHECKPOINT:
-                    gameForm.HandlePacket(p);
-                    break;
             }
         }
     }
