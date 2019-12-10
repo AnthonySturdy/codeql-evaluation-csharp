@@ -49,12 +49,10 @@ namespace SimpleClient {
         public Car playerCar;
         public Car opponentCar;
         public float rotationSpeed = 4.5f;
-        public float moveSpeed = 5.0f;
+        public float moveSpeed = 7.0f;
         public float accelerationSpeed = 1.0f;
         public Texture2D checkpointTexture;
         public float checkpointPosX = 829, checkpointPosY = 560;
-
-        public long curFrame = 0;
 
         public DrawTest(SimpleClient _simpleClientInst, Form form) {
             simpleClientInst = _simpleClientInst;
@@ -78,22 +76,18 @@ namespace SimpleClient {
 
             FileStream checkpointFs = new FileStream("Textures/checkpoint.png", FileMode.Open, FileAccess.Read);
             checkpointTexture = Texture2D.FromStream(GraphicsDevice, checkpointFs);
-
         }
 
         protected override void Update(GameTime gameTime) {
             base.Update(gameTime);
 
             if(checkpointPosX == -100 && checkpointPosY == -100) {
+                PlayerClientInformationPacket p = new PlayerClientInformationPacket(playerCar.posX, playerCar.posY, playerCar.rotation);
+                simpleClientInst.UDPSend(p);
                 f.Close();
             }
 
-            curFrame++;
-
             //Send this clients information to server
-            if(curFrame % 2 == 0)
-                simpleClientInst.UDPSend(new PlayerClientInformationPacket(playerCar.posX, playerCar.posY, playerCar.rotation));
-            
             KeyboardState state = Keyboard.GetState();
             if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up)) {
                 //Calculate direction vector from angle
@@ -123,6 +117,8 @@ namespace SimpleClient {
                     playerCar.rotation -= (float)gameTime.ElapsedGameTime.TotalSeconds * rotationSpeed;
                 }
             }
+
+            simpleClientInst.UDPSend(new PlayerClientInformationPacket(playerCar.posX, playerCar.posY, playerCar.rotation));
         }
 
         protected override void Draw() {
@@ -134,9 +130,10 @@ namespace SimpleClient {
 
             Editor.spriteBatch.Draw(opponentCar.texture, new Rectangle((int)opponentCar.posX, (int)opponentCar.posY, opponentCar.texture.Width, opponentCar.texture.Height), new Rectangle(0, 0, opponentCar.texture.Width, opponentCar.texture.Height), opponentCar.colour, opponentCar.rotation + 1.5708f, new Vector2(opponentCar.texture.Width/2, opponentCar.texture.Height/2), SpriteEffects.None, 1f);
             Editor.spriteBatch.Draw(playerCar.texture, new Rectangle((int)playerCar.posX, (int)playerCar.posY, playerCar.texture.Width, playerCar.texture.Height), new Rectangle(0, 0, playerCar.texture.Width, playerCar.texture.Height), playerCar.colour, playerCar.rotation + 1.5708f, new Vector2(playerCar.texture.Width / 2, playerCar.texture.Height / 2), SpriteEffects.None, 1f);
-            Editor.spriteBatch.Draw(checkpointTexture, new Rectangle((int)checkpointPosX, (int)checkpointPosY, checkpointTexture.Width, checkpointTexture.Height), new Rectangle(0, 0, checkpointTexture.Width, checkpointTexture.Height), Microsoft.Xna.Framework.Color.White, 0, new Vector2(checkpointTexture.Width / 2, checkpointTexture.Height / 2), SpriteEffects.None, 1f);
 
-            string s = playerCar.posX + ", " + playerCar.posY;
+            Editor.spriteBatch.Draw(checkpointTexture, new Rectangle((int)checkpointPosX, (int)checkpointPosY, checkpointTexture.Width, checkpointTexture.Height), new Rectangle(0, 0, checkpointTexture.Width, checkpointTexture.Height), new Microsoft.Xna.Framework.Color(255, 255, 255, 100), 0, new Vector2(checkpointTexture.Width / 2, checkpointTexture.Height / 2), SpriteEffects.None, 1f);
+
+            string s = checkpointPosX + ", " + checkpointPosY;
             Editor.spriteBatch.DrawString(Editor.Font, s, new Vector2(
                 (Editor.graphics.Viewport.Width / 2) - (Editor.Font.MeasureString(s).X / 2),
                 (Editor.graphics.Viewport.Height / 2) - (Editor.FontHeight / 2)),

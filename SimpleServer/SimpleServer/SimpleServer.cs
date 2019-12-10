@@ -161,7 +161,7 @@ namespace SimpleServer {
             }
         }
 
-        void MessageAllClients(string message) {
+        public void MessageAllClients(string message) {
             if (message.Contains(':'))
                 Console.ForegroundColor = ConsoleColor.Red;
             else
@@ -235,7 +235,7 @@ namespace SimpleServer {
                 for(int i = 0; i < games.Count; i++) {      //Check if challenged player is already in an empty game
                     if (games[i].clientList.Contains(c) && games[i].clientList.Count == 1) {  //If is in an empty game, add client to game and start game
                         games[i].clientList.Add(client);
-                        games[i].Start();
+                        games[i].Start(this);
                         return;
                     }
                 }
