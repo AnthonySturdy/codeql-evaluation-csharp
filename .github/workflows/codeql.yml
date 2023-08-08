@@ -74,8 +74,7 @@ jobs:
 
     - run: |
         echo "Run, Build Application using script"
-        dotnet build ./SimpleServer/SimpleServer.sln
-
+        xbuild ./SimpleServer/SimpleServer.sln
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
